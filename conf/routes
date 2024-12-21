@@ -9,6 +9,7 @@ POST    /createUser                 controllers.User.UsersController.createUser(
 POST    /loginUser                  controllers.User.UsersController.loginUser(req: Request)
 POST    /users/all                  controllers.User.UsersController.getAllUsers
 POST    /forgotPasswordSendEmail    controllers.User.UsersController.forgotPasswordSendEmail(req: Request)
-
+POST    /updateUserPassword         controllers.User.UsersController.updateUserPassword(req: Request)
+POST    /deleteUser                 controllers.User.UsersController.deleteUser(req: Request)
 
 POST    /addMovie                  controllers.movies.MoviesController.addMovie(req: Request)

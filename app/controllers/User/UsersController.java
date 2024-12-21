@@ -249,8 +249,7 @@ public class UsersController  extends Controller {
                             return resultOfFuture;
                         }
 
-                        // Success - return user details or token
-                        //If is not verified this will not be executed
+
                         resultOfFuture.put("status", "success");
                         resultOfFuture.put("DO_IT", user.getId());
                         resultOfFuture.put("name", user.getName());
@@ -306,48 +305,119 @@ public class UsersController  extends Controller {
         });
     }
 
-    // Update user by ID
-    public CompletionStage<Result> updateUser(Http.Request request) {
-        return CompletableFuture.supplyAsync(() -> {
-            JsonNode json = request.body().asJson();
-            if (json == null || !json.has("id")) {
-                return badRequest("Missing user ID in JSON");
+    //Για την αλλαγή κωδικού
+    public Result updateUserPassword(Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if(json == null){
+            return badRequest("Invalid Json Format");
+        }else {
+
+            ObjectNode result = Json.newObject();
+
+            try{
+                CompletableFuture<JsonNode> updateFuture = CompletableFuture.supplyAsync(() -> {
+                    return jpaApi.withTransaction(entityManager -> {
+
+                        ObjectNode resultOfFuture = Json.newObject();
+
+                        Long id = json.findPath("id").asLong();
+
+                        String unhashedPassword = json.findPath("password").asText();
+
+                        long userCount = (long) entityManager.createNativeQuery("select count(*) from users u where id =" + id, Long.class).getSingleResult();
+                        if(userCount == 0){
+                            resultOfFuture.put("status", "error");
+                            resultOfFuture.put("message", "User with id: " + id + " does not exists!");
+                            return resultOfFuture;
+                        }
+
+                        User user = entityManager.find(User.class, id);
+
+                        //Hash the unhashed passsword
+                        String hashedPassword = "@@@@";
+                        try{
+                            hashedPassword = encryptDecrypt.encrypt(unhashedPassword);
+                        }catch (Exception e){
+                            resultOfFuture.put("status", "error");
+                            resultOfFuture.put("message", "Σφάλμα κατά την αλλαγή κωδικού");
+                            return resultOfFuture;
+                        }
+
+                        user.setPassword(hashedPassword);
+
+                        entityManager.merge(user);
+
+                        resultOfFuture.put("status", "success");
+                        resultOfFuture.put("DO_IT", user.getId());
+                        resultOfFuture.put("name", user.getName());
+                        resultOfFuture.put("email", user.getEmail());
+                        resultOfFuture.put("isVerified", user.isVerified());
+                        resultOfFuture.put("system", "USERS_ACTIONS");
+                        resultOfFuture.put("message", "Η αλλαγή κωδικού πραγματοποιήθηκε!");
+                        return resultOfFuture;
+
+                    });
+                }, executionContext);
+
+                result = (ObjectNode) updateFuture.get();
+                return ok(result);
+
+            }catch (Exception e){
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Σφάλμα κατά την αλλαγή κωδικού");
+                return ok(result);
             }
-
-            Long userId = json.get("id").asLong();
-            return jpaApi.withTransaction(em -> {
-                User user = em.find(User.class, userId);
-                if (user == null) {
-                    return notFound("User not found");
-                }
-
-                User updatedUser = objectMapper.convertValue(json, User.class);
-                user.setName(updatedUser.getName());
-                user.setEmail(updatedUser.getEmail());
-                user.setPassword(updatedUser.getPassword());
-                em.merge(user);
-                return ok("User updated successfully!");
-            });
-        });
+        }
     }
 
     // Delete user by ID
-    public CompletionStage<Result> deleteUser(Http.Request request) {
-        return CompletableFuture.supplyAsync(() -> {
-            JsonNode json = request.body().asJson();
-            if (json == null || !json.has("id")) {
-                return badRequest("Missing user ID in JSON");
-            }
+    public Result deleteUser(Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if (json == null){
+            return badRequest("Invalid Json Format");
+        }else {
 
-            Long userId = json.get("id").asLong();
-            return jpaApi.withTransaction(em -> {
-                User user = em.find(User.class, userId);
-                if (user == null) {
-                    return notFound("User not found");
-                }
-                em.remove(user);
-                return ok("User deleted successfully!");
-            });
-        });
+            ObjectNode result = Json.newObject();
+
+            try{
+                CompletableFuture<JsonNode> deleteFuture = CompletableFuture.supplyAsync(() -> {
+                    return jpaApi.withTransaction(entityManager -> {
+
+                        ObjectNode resultOfFuture = Json.newObject();
+
+                        Long id = json.findPath("id").asLong();
+
+                        long userCount = (long) entityManager.createNativeQuery("select count(*) from users u where id =" + id, Long.class).getSingleResult();
+                        if(userCount == 0){
+                            resultOfFuture.put("status", "error");
+                            resultOfFuture.put("message", "User with id: " + id + " does not exists!");
+                            return resultOfFuture;
+                        }
+
+                        User user = entityManager.find(User.class, id);
+
+                        entityManager.remove(user);
+
+                        resultOfFuture.put("status", "success");
+                        resultOfFuture.put("DO_IT", user.getId());
+                        resultOfFuture.put("system", "USERS_ACTIONS");
+                        resultOfFuture.put("message", "Η διαγραφή ολοκληρώθηκε με επιτυχία!");
+                        return resultOfFuture;
+
+                    });
+                }, executionContext);
+
+                result = (ObjectNode) deleteFuture.get();
+                return ok(result);
+
+            }catch (Exception e){
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("system", "USERS_ACTIONS");
+                result.put("message", "Σφάλμα κατά την διαγραφή");
+                return ok(result);
+            }
+        }
     }
 }
