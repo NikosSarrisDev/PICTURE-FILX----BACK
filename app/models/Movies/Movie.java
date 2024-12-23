@@ -25,6 +25,8 @@ public class Movie {
 
     private double rating;
 
+    private String type;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "movie_actor",
@@ -34,6 +36,11 @@ public class Movie {
     private Set<Actor> actors = new HashSet<>();
 
     private int duration;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "release_date")
+    private Date releaseDate;
+
 
     private int ticketCount;
 
@@ -89,6 +96,14 @@ public class Movie {
         this.rating = rating;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public Set<Actor> getActors() {
         return actors;
     }
@@ -103,6 +118,14 @@ public class Movie {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public Date getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
     public int getTicketCount() {

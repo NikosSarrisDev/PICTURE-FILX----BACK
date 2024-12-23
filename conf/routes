@@ -13,3 +13,6 @@ POST    /updateUserPassword         controllers.User.UsersController.updateUserP
 POST    /deleteUser                 controllers.User.UsersController.deleteUser(req: Request)
 
 POST    /addMovie                  controllers.movies.MoviesController.addMovie(req: Request)
+POST    /updateMovie               controllers.movies.MoviesController.updateMovie(req: Request)
+POST    /deleteMovie               controllers.movies.MoviesController.deleteMovie(req: Request)
+POST    /getMovie                  controllers.movies.MoviesController.getMovie(req: Request)
