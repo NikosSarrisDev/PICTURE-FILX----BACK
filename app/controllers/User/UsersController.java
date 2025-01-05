@@ -245,7 +245,7 @@ public class UsersController  extends Controller {
 
                         if (!user.isVerified()){
                             resultOfFuture.put("status", "error");
-                            resultOfFuture.put("message", "Ο λογαριασμός υπάρχει αλλά δεν έχει επαληθευτεί το email");
+                            resultOfFuture.put("message", "Ο λογαριασμός υπάρχει αλλά δεν έχει επαληθευτεί το email. Δες την αλληλογραφία σου!");
                             return resultOfFuture;
                         }
 
@@ -274,6 +274,39 @@ public class UsersController  extends Controller {
             }
         }
 
+    }
+
+    public Result googleLoginSendCredentials(final Http.Request request) throws IOException{
+        JsonNode json = request.body().asJson();
+        if(json == null){
+            return badRequest("Invalid Json Format");
+        }else {
+
+            ObjectNode result = Json.newObject();
+
+            try{
+
+                CompletableFuture<JsonNode> googleFuture = CompletableFuture.supplyAsync(() -> {
+                    return jpaApi.withTransaction(entityManager -> {
+                        ObjectNode resultOfFuture = Json.newObject();
+
+                        resultOfFuture.put("status", "success");
+                        resultOfFuture.put("credential", json);
+                        resultOfFuture.put("message", "Η σύνδεση με Google έγινε με επιτυχία");
+                        return resultOfFuture;
+                    });
+                }, executionContext);
+
+                result = (ObjectNode) googleFuture.get();
+                return ok(result);
+
+            }catch (Exception e){
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Κάτι πήγε στραβά με την σύνδεση με το email");
+                return ok(result);
+            }
+        }
     }
 
     // Get all users good for testing

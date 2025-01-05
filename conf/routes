@@ -12,6 +12,9 @@ POST    /forgotPasswordSendEmail    controllers.User.UsersController.forgotPassw
 POST    /updateUserPassword         controllers.User.UsersController.updateUserPassword(req: Request)
 POST    /deleteUser                 controllers.User.UsersController.deleteUser(req: Request)
 
+#//Google login Send Credentials to the Front
+POST    /googleLoginSendCredentials  controllers.User.UsersController.googleLoginSendCredentials(req: Request)
+
 POST    /addMovie                  controllers.movies.MoviesController.addMovie(req: Request)
 POST    /updateMovie               controllers.movies.MoviesController.updateMovie(req: Request)
 POST    /deleteMovie               controllers.movies.MoviesController.deleteMovie(req: Request)
