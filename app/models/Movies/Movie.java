@@ -27,6 +27,10 @@ public class Movie {
 
     private String type;
 
+    private String trailerCode;
+
+    private String rated;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "movie_actor",
@@ -102,6 +106,22 @@ public class Movie {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getTrailerCode() {
+        return trailerCode;
+    }
+
+    public void setTrailerCode(String trailerCode) {
+        this.trailerCode = trailerCode;
+    }
+
+    public String getRated() {
+        return rated;
+    }
+
+    public void setRated(String rated) {
+        this.rated = rated;
     }
 
     public Set<Actor> getActors() {

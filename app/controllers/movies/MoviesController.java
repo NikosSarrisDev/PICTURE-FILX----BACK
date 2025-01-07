@@ -58,6 +58,8 @@ public class MoviesController extends Controller {
                          double rating = json.findPath("rating").asDouble();
                          int duration = json.findPath("duration").asInt();
                          String type = json.findPath("type").asText();
+                         String trailerCode = json.findPath("trailerCode").asText();
+                         String rated = json.findPath("rated").asText();
                          String releaseDate = json.findPath("releaseDate").asText();
                          int ticketCount = json.findPath("ticketCount").asInt();
                          String thumbnailBase64 = json.findPath("thumbnail").asText();
@@ -89,6 +91,8 @@ public class MoviesController extends Controller {
                         movie.setRating(rating);
                         movie.setDuration(duration);
                         movie.setType(type);
+                        movie.setTrailerCode(trailerCode);
+                        movie.setRated(rated);
                         try{
                             movie.setReleaseDate(new SimpleDateFormat("yyyy-MM-dd").parse(releaseDate));
                         }catch (Exception e){
@@ -148,6 +152,8 @@ public class MoviesController extends Controller {
                         double rating = json.findPath("rating").asDouble();
                         int duration = json.findPath("duration").asInt();
                         String type = json.findPath("type").asText();
+                        String trailerCode  = json.findPath("trailerCode").asText();
+                        String rated = json.findPath("rated").asText();
                         String releaseDate = json.findPath("releaseDate").asText();
                         int ticketCount = json.findPath("ticketCount").asInt();
                         String thumbnailBase64 = json.findPath("thumbnail").asText();
@@ -178,6 +184,9 @@ public class MoviesController extends Controller {
                         movie.setProducer(producer);
                         movie.setRating(rating);
                         movie.setDuration(duration);
+                        movie.setType(type);
+                        movie.setTrailerCode(trailerCode);
+                        movie.setRated(rated);
                         try{
                             movie.setReleaseDate(new SimpleDateFormat("yyyy-MM-dd").parse(releaseDate));
                         }catch (Exception e){
@@ -282,6 +291,7 @@ public class MoviesController extends Controller {
                         String producer = json.findPath("producer").asText();
                         String releaseDate = json.findPath("releaseDate").asText();
                         String type = json.findPath("type").asText();
+                        String rated = json.findPath("rated").asText();
                         String start = json.findPath("start").asText();
                         String limit = json.findPath("limit").asText();
 
@@ -301,6 +311,9 @@ public class MoviesController extends Controller {
                         }
                         if(type != null && !type.equalsIgnoreCase("") && !type.equalsIgnoreCase("null")){
                             sql += " and (m.type) like " + "'%" + type + "%'";
+                        }
+                        if(rated !=null && !rated.equalsIgnoreCase("") && !rated.equalsIgnoreCase("null")){
+                            sql += " and (m.type) is " + rated;
                         }
 
                         //All the users till now i mean before the limit and order by
