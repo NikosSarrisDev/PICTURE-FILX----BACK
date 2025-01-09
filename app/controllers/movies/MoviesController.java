@@ -313,7 +313,7 @@ public class MoviesController extends Controller {
                             sql += " and (m.type) like " + "'%" + type + "%'";
                         }
                         if(rated !=null && !rated.equalsIgnoreCase("") && !rated.equalsIgnoreCase("null")){
-                            sql += " and (m.type) is " + rated;
+                            sql += " and (m.rated) is " + rated;
                         }
 
                         //All the users till now i mean before the limit and order by
@@ -335,11 +335,19 @@ public class MoviesController extends Controller {
                         for (Movie movie : list) {
                             HashMap<String, Object> officeMap = new HashMap<>();
                             officeMap.put("id", movie.getId());
+                            officeMap.put("orderCol", orderCol);
+                            officeMap.put("descAsc", descAsc);
                             officeMap.put("title", movie.getTitle());
                             officeMap.put("director", movie.getDirector());
                             officeMap.put("producer", movie.getProducer());
                             officeMap.put("releaseDate", movie.getReleaseDate());
                             officeMap.put("type", movie.getType());
+                            officeMap.put("rated", movie.getRated());
+                            officeMap.put("rating", movie.getRating());
+                            officeMap.put("duration", movie.getDuration());
+                            officeMap.put("trailerCode", movie.getTrailerCode());
+                            officeMap.put("description", movie.getDescription());
+                            officeMap.put("thumbnail", movie.getThumbnail());
 
                             finalList.add(officeMap);
                         }
