@@ -12,6 +12,9 @@ POST    /forgotPasswordSendEmail    controllers.User.UsersController.forgotPassw
 POST    /updateUserPassword         controllers.User.UsersController.updateUserPassword(req: Request)
 POST    /deleteUser                 controllers.User.UsersController.deleteUser(req: Request)
 
+#//User contact with the admin
+POST    /sendContactMessage         controllers.contact.ContactController.sendContactMessage(req: Request)
+
 #//Google login Send Credentials to the Front
 POST    /googleLoginSendCredentials  controllers.User.UsersController.googleLoginSendCredentials(req: Request)
 

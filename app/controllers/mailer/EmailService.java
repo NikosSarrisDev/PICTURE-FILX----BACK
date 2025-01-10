@@ -37,4 +37,14 @@ public class EmailService {
         mailerClient.send(email);
     }
 
+    public void sendContactFormToAdminFromEmail(String recipientEmail, String text) {
+        Email email = new Email()
+                .setSubject("You have a message from a user!")
+                .setFrom(recipientEmail)
+                .addTo("nikolaossarrisnode@gmail.com")
+                .setBodyText("The user with email " + recipientEmail + " send you this text: " + text);
+
+        mailerClient.send(email);
+    }
+
 }
