@@ -60,6 +60,7 @@ public class MoviesController extends Controller {
                          String type = json.findPath("type").asText();
                          String trailerCode = json.findPath("trailerCode").asText();
                          String rated = json.findPath("rated").asText();
+                         String wikiLink = json.findPath("wikiLink").asText();
                          String releaseDate = json.findPath("releaseDate").asText();
                          int ticketCount = json.findPath("ticketCount").asInt();
                          String thumbnailBase64 = json.findPath("thumbnail").asText();
@@ -93,6 +94,7 @@ public class MoviesController extends Controller {
                         movie.setType(type);
                         movie.setTrailerCode(trailerCode);
                         movie.setRated(rated);
+                        movie.setWikiLink(wikiLink);
                         try{
                             movie.setReleaseDate(new SimpleDateFormat("yyyy-MM-dd").parse(releaseDate));
                         }catch (Exception e){
@@ -154,6 +156,7 @@ public class MoviesController extends Controller {
                         String type = json.findPath("type").asText();
                         String trailerCode  = json.findPath("trailerCode").asText();
                         String rated = json.findPath("rated").asText();
+                        String wikiLink = json.findPath("wikiLink").asText();
                         String releaseDate = json.findPath("releaseDate").asText();
                         int ticketCount = json.findPath("ticketCount").asInt();
                         String thumbnailBase64 = json.findPath("thumbnail").asText();
@@ -187,6 +190,7 @@ public class MoviesController extends Controller {
                         movie.setType(type);
                         movie.setTrailerCode(trailerCode);
                         movie.setRated(rated);
+                        movie.setWikiLink(wikiLink);
                         try{
                             movie.setReleaseDate(new SimpleDateFormat("yyyy-MM-dd").parse(releaseDate));
                         }catch (Exception e){
@@ -343,6 +347,7 @@ public class MoviesController extends Controller {
                             officeMap.put("releaseDate", movie.getReleaseDate());
                             officeMap.put("type", movie.getType());
                             officeMap.put("rated", movie.getRated());
+                            officeMap.put("wikiLink", movie.getWikiLink());
                             officeMap.put("rating", movie.getRating());
                             officeMap.put("duration", movie.getDuration());
                             officeMap.put("trailerCode", movie.getTrailerCode());

@@ -31,6 +31,8 @@ public class Movie {
 
     private String rated;
 
+    private String wikiLink;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "movie_actor",
@@ -122,6 +124,14 @@ public class Movie {
 
     public void setRated(String rated) {
         this.rated = rated;
+    }
+
+    public String getWikiLink() {
+        return wikiLink;
+    }
+
+    public void setWikiLink(String wikiLink) {
+        this.wikiLink = wikiLink;
     }
 
     public Set<Actor> getActors() {
