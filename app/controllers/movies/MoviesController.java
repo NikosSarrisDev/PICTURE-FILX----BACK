@@ -63,13 +63,7 @@ public class MoviesController extends Controller {
                          String wikiLink = json.findPath("wikiLink").asText();
                          String releaseDate = json.findPath("releaseDate").asText();
                          int ticketCount = json.findPath("ticketCount").asInt();
-                         String thumbnailBase64 = json.findPath("thumbnail").asText();
-
-                         //Conversion to Base64 in order to persist them
-                        byte[] thumbnail = null;
-                        if (thumbnailBase64 != null && !thumbnailBase64.isEmpty()) {
-                            thumbnail = Base64.getDecoder().decode(thumbnailBase64);
-                        }
+                         String thumbnail = json.findPath("thumbnail").asText();
 
                         //Convert Actors JSON to Set in order to persist it
                         Set<Actor> actors = new HashSet<>();
@@ -159,13 +153,7 @@ public class MoviesController extends Controller {
                         String wikiLink = json.findPath("wikiLink").asText();
                         String releaseDate = json.findPath("releaseDate").asText();
                         int ticketCount = json.findPath("ticketCount").asInt();
-                        String thumbnailBase64 = json.findPath("thumbnail").asText();
-
-                        //Conversion to Base64 in order to persist them
-                        byte[] thumbnail = null;
-                        if (thumbnailBase64 != null && !thumbnailBase64.isEmpty()) {
-                            thumbnail = Base64.getDecoder().decode(thumbnailBase64);
-                        }
+                        String thumbnail = json.findPath("thumbnail").asText();
 
                         //Convert Actors JSON to Set in order to persist it
                         Set<Actor> actors = new HashSet<>();

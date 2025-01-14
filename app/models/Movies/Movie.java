@@ -51,8 +51,8 @@ public class Movie {
     private int ticketCount;
 
     @Lob
-    @Column(name = "thumbnail", columnDefinition = "BLOB")
-    private byte[] thumbnail;
+    @Column(name = "thumbnail", columnDefinition = "LONGTEXT")
+    private String thumbnail;
 
     public Long getId() {
         return id;
@@ -166,11 +166,11 @@ public class Movie {
         this.ticketCount = ticketCount;
     }
 
-    public byte[] getThumbnail() {
+    public String getThumbnail() {
         return thumbnail;
     }
 
-    public void setThumbnail(byte[] thumbnail) {
+    public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
 
@@ -178,13 +178,11 @@ public class Movie {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Movie movie)) return false;
-        return duration == movie.duration && ticketCount == movie.ticketCount && Objects.equals(id, movie.id) && Objects.equals(title, movie.title) && Objects.equals(description, movie.description) && Objects.equals(director, movie.director) && Objects.equals(producer, movie.producer) && Objects.equals(actors, movie.actors) && Arrays.equals(thumbnail, movie.thumbnail);
+        return Double.compare(rating, movie.rating) == 0 && duration == movie.duration && ticketCount == movie.ticketCount && Objects.equals(id, movie.id) && Objects.equals(title, movie.title) && Objects.equals(description, movie.description) && Objects.equals(director, movie.director) && Objects.equals(producer, movie.producer) && Objects.equals(type, movie.type) && Objects.equals(trailerCode, movie.trailerCode) && Objects.equals(rated, movie.rated) && Objects.equals(wikiLink, movie.wikiLink) && Objects.equals(actors, movie.actors) && Objects.equals(releaseDate, movie.releaseDate) && Objects.equals(thumbnail, movie.thumbnail);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, title, description, director, producer, actors, duration, ticketCount);
-        result = 31 * result + Arrays.hashCode(thumbnail);
-        return result;
+        return Objects.hash(id, title, description, director, producer, rating, type, trailerCode, rated, wikiLink, actors, duration, releaseDate, ticketCount, thumbnail);
     }
 }
