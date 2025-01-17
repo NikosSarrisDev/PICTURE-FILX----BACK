@@ -302,7 +302,7 @@ public class MoviesController extends Controller {
                             sql += " and (m.release_date) like " + "'%" + releaseDate + "%'";
                         }
                         if(type != null && !type.equalsIgnoreCase("") && !type.equalsIgnoreCase("null")){
-                            sql += " and (m.type) like " + "'%" + type + "%'";
+                            sql += " and (m.type) in " + "(" + type + ")";
                         }
                         if(rated !=null && !rated.equalsIgnoreCase("") && !rated.equalsIgnoreCase("null")){
                             sql += " and (m.rated) is " + rated;
