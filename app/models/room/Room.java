@@ -23,8 +23,28 @@ public class Room {
     private Set<Seat> seats = new HashSet<>();
 
     @Lob
-    @Column(name = "thumbnail", columnDefinition = "BLOB")
-    private byte[] thumbnail;
+    @Column(name = "thumbnail", columnDefinition = "LONGTEXT")
+    private String thumbnail;
+
+    @Lob
+    @Column(name = "image1", columnDefinition = "LONGTEXT")
+    private String image1;
+
+    @Lob
+    @Column(name = "image2", columnDefinition = "LONGTEXT")
+    private String image2;
+
+    @Lob
+    @Column(name = "image3", columnDefinition = "LONGTEXT")
+    private String image3;
+
+    @Lob
+    @Column(name = "image4", columnDefinition = "LONGTEXT")
+    private String image4;
+
+    @Lob
+    @Column(name = "image5", columnDefinition = "LONGTEXT")
+    private String image5;
 
     public Long getId() {
         return id;
@@ -66,25 +86,63 @@ public class Room {
         this.seats = seats;
     }
 
-    public byte[] getThumbnail() {
+    public String getThumbnail() {
         return thumbnail;
     }
 
-    public void setThumbnail(byte[] thumbnail) {
+    public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public String getImage1() {
+        return image1;
+    }
+
+    public void setImage1(String image1) {
+        this.image1 = image1;
+    }
+
+    public String getImage2() {
+        return image2;
+    }
+
+    public void setImage2(String image2) {
+        this.image2 = image2;
+    }
+
+    public String getImage3() {
+        return image3;
+    }
+
+    public void setImage3(String image3) {
+        this.image3 = image3;
+    }
+
+    public String getImage4() {
+        return image4;
+    }
+
+    public void setImage4(String image4) {
+        this.image4 = image4;
+    }
+
+    public String getImage5() {
+        return image5;
+    }
+
+    public void setImage5(String image5) {
+        this.image5 = image5;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Room room)) return false;
-        return availableNumberOfSeats == room.availableNumberOfSeats && Objects.equals(id, room.id) && Objects.equals(title, room.title) && Objects.equals(description, room.description) && Objects.equals(seats, room.seats) && Arrays.equals(thumbnail, room.thumbnail);
+        return availableNumberOfSeats == room.availableNumberOfSeats && Objects.equals(id, room.id) && Objects.equals(title, room.title) && Objects.equals(description, room.description) && Objects.equals(seats, room.seats) && Objects.equals(thumbnail, room.thumbnail);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, title, description, availableNumberOfSeats, seats);
-        result = 31 * result + Arrays.hashCode(thumbnail);
-        return result;
+        return Objects.hash(id, title, description, availableNumberOfSeats, seats, thumbnail);
     }
 }

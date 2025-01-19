@@ -22,3 +22,13 @@ POST    /addMovie                  controllers.movies.MoviesController.addMovie(
 POST    /updateMovie               controllers.movies.MoviesController.updateMovie(req: Request)
 POST    /deleteMovie               controllers.movies.MoviesController.deleteMovie(req: Request)
 POST    /getMovie                  controllers.movies.MoviesController.getMovie(req: Request)
+
+POST    /addRoom                   controllers.movies.RoomsController.addRoom(req: Request)
+POST    /updateRoom                controllers.movies.RoomsController.updateRoom(req: Request)
+POST    /deleteRoom                controllers.movies.RoomsController.deleteRoom(req: Request)
+POST    /getRoom                   controllers.movies.RoomsController.getRoom(req: Request)
+
+POST    /addSeat                   controllers.movies.SeatController.addSeat(req: Request)
+POST    /updateSeat                controllers.movies.SeatController.updateSeat(req: Request)
+POST    /deleteSeat                controllers.movies.SeatController.deleteSeat(req: Request)
+POST    /getSeat                   controllers.movies.SeatController.getSeat(req: Request)
