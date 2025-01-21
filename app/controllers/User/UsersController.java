@@ -185,7 +185,11 @@ public class UsersController  extends Controller {
                 }, executionContext);
 
                 result = (ObjectNode) verifyFuture.get();
-                return ok(result);
+                if ("success".equals(result.get("status").asText())) {
+                    return ok(views.html.verifyEmailTemplate.render(email));
+                } else {
+                    return internalServerError("Verification failed");
+                }
 
             }catch (Exception e){
                 e.printStackTrace();

@@ -15,6 +15,8 @@ public class Room {
 
     private String title;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private int availableNumberOfSeats;

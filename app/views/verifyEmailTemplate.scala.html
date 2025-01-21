@@ -1,0 +1,44 @@
+@(email: String)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Επαλήθευση email</title>
+        <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f9;
+                    color: #333;
+                    text-align: center;
+                    margin: 50px;
+                }
+                .container {
+                    max-width: 500px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    border: 1px solid #ddd;
+                    background-color: #fff;
+                    border-radius: 5px;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                }
+                a {
+                    color: #007bff;
+                    text-decoration: none;
+                }
+                a:hover {
+                    text-decoration: underline;
+                }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Επιτυχής Επαλήθευση</h1>
+            <p>Το email σου <strong>@email</strong> επαλήθευτηκε με επιτυχία.</p>
+            <p>
+                <a href="http://localhost:4200/login">Πάτα εδώ για να επιστρέψεις στην οθόνη της σύνδεσης</a>
+            </p>
+        </div>
+    </body>
+</html>
