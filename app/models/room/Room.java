@@ -1,6 +1,7 @@
 package models.room;
 
 import jakarta.persistence.*;
+import models.View.View;
 import models.seat.Seat;
 
 import java.util.*;
@@ -19,10 +20,17 @@ public class Room {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Lob
+    @Column(columnDefinition = "TINYTEXT")
+    private String quickText;
+
     private int availableNumberOfSeats;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Seat> seats = new HashSet<>();
+
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<View> views;
 
     @Lob
     @Column(name = "thumbnail", columnDefinition = "LONGTEXT")
@@ -72,6 +80,14 @@ public class Room {
         this.description = description;
     }
 
+    public String getQuickText() {
+        return quickText;
+    }
+
+    public void setQuickText(String quickText) {
+        this.quickText = quickText;
+    }
+
     public int getAvailableNumberOfSeats() {
         return availableNumberOfSeats;
     }
@@ -86,6 +102,14 @@ public class Room {
 
     public void setSeats(Set<Seat> seats) {
         this.seats = seats;
+    }
+
+    public Set<View> getViews() {
+        return views;
+    }
+
+    public void setViews(Set<View> views) {
+        this.views = views;
     }
 
     public String getThumbnail() {

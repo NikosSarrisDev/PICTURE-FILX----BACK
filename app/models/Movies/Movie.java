@@ -1,6 +1,7 @@
 package models.Movies;
 
 import jakarta.persistence.*;
+import models.View.View;
 import models.actors.Actor;
 
 import java.util.*;
@@ -32,6 +33,9 @@ public class Movie {
     private String rated;
 
     private String wikiLink;
+
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<View> views;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -132,6 +136,14 @@ public class Movie {
 
     public void setWikiLink(String wikiLink) {
         this.wikiLink = wikiLink;
+    }
+
+    public Set<View> getViews() {
+        return views;
+    }
+
+    public void setViews(Set<View> views) {
+        this.views = views;
     }
 
     public Set<Actor> getActors() {

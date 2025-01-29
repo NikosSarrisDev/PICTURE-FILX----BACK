@@ -32,3 +32,8 @@ POST    /addSeat                   controllers.movies.SeatController.addSeat(req
 POST    /updateSeat                controllers.movies.SeatController.updateSeat(req: Request)
 POST    /deleteSeat                controllers.movies.SeatController.deleteSeat(req: Request)
 POST    /getSeat                   controllers.movies.SeatController.getSeat(req: Request)
+
+POST    /addView                   controllers.movies.ViewsController.addView(req: Request)
+POST    /updateView                controllers.movies.ViewsController.updateView(req: Request)
+POST    /deleteView                controllers.movies.ViewsController.deleteView(req: Request)
+POST    /getView                   controllers.movies.ViewsController.getView(req: Request)

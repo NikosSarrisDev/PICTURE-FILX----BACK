@@ -49,6 +49,7 @@ public class RoomsController extends Controller {
 
                         String title = json.findPath("title").asText();
                         String description = json.findPath("description").asText();
+                        String quickText = json.findPath("quickText").asText();
                         int availableNumberOfSeats = json.findPath("availableNumberOfSeats").asInt();
                         String thumbnail = json.findPath("thumbnail").asText();
                         String image1 = json.findPath("image1").asText();
@@ -61,6 +62,7 @@ public class RoomsController extends Controller {
 
                         room.setTitle(title);
                         room.setDescription(description);
+                        room.setQuickText(quickText);
                         room.setAvailableNumberOfSeats(availableNumberOfSeats);
                         room.setThumbnail(thumbnail);
                         room.setImage1(image1);
@@ -110,6 +112,7 @@ public class RoomsController extends Controller {
                         Long id = json.findPath("id").asLong();
                         String title = json.findPath("title").asText();
                         String description = json.findPath("description").asText();
+                        String quickText = json.findPath("quickText").asText();
                         int availableNumberOfSeats = json.findPath("availableNumberOfSeats").asInt();
                         String thumbnail = json.findPath("thumbnail").asText();
                         String image1 = json.findPath("image1").asText();
@@ -122,6 +125,7 @@ public class RoomsController extends Controller {
 
                         room.setTitle(title);
                         room.setDescription(description);
+                        room.setQuickText(quickText);
                         room.setAvailableNumberOfSeats(availableNumberOfSeats);
                         room.setThumbnail(thumbnail);
                         room.setImage1(image1);
@@ -217,6 +221,7 @@ public class RoomsController extends Controller {
                     String id = json.findPath("id").asText();
                     String title = json.findPath("title").asText();
                     String description = json.findPath("description").asText();
+                    String quickText = json.findPath("quickText").asText();
                     String start = json.findPath("start").asText();
                     String limit = json.findPath("limit").asText();
 
@@ -225,8 +230,8 @@ public class RoomsController extends Controller {
                     if(title != null && !title.equalsIgnoreCase("") && !title.equalsIgnoreCase("null")){
                         sql += " and (r.title) like " + "'%" + title + "%'";
                     }
-                    if(description != null && !description.equalsIgnoreCase("") && !description.equalsIgnoreCase("null")){
-                        sql += " and (r.description) like " + "'%" + title + "%'";
+                    if(quickText != null && !quickText.equalsIgnoreCase("") && !quickText.equalsIgnoreCase("null")){
+                        sql += " and (r.quickText) like " + "'%" + quickText + "%'";
                     }
 
                     //All the users till now i mean before the limit and order by
@@ -252,6 +257,7 @@ public class RoomsController extends Controller {
                         officeMap.put("descAsc", descAsc);
                         officeMap.put("title", room.getTitle());
                         officeMap.put("description", room.getDescription());
+                        officeMap.put("quickText", room.getQuickText());
                         officeMap.put("availableNumberOfSeats", room.getAvailableNumberOfSeats());
                         officeMap.put("thumbnail", room.getThumbnail());
                         officeMap.put("image1", room.getImage1());

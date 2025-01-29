@@ -55,6 +55,7 @@ public class UsersController  extends Controller {
                         String name = json.findPath("name").asText();
                         String email = json.findPath("email").asText();
                         String password = json.findPath("password").asText();
+                        String role = json.findPath("role").asText();
                         String hashedPassword = "@@@@";
 
                         try {
@@ -78,6 +79,13 @@ public class UsersController  extends Controller {
 
                         user.setName(name);
                         user.setEmail(email);
+                        if(role.equals("USER") || role.equals("ADMIN")){
+                            user.setRole(role);
+                        } else {
+                            resultOfFuture.put("status", "error");
+                            resultOfFuture.put("message", "Ο σιγκεκριμένος ρόλος δεν υποστηρίζεται από το σύστημα");
+                            return resultOfFuture;
+                        }
                         user.setPassword(hashedPassword);
 
                         entityManager.persist(user);
