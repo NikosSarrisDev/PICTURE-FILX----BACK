@@ -433,13 +433,6 @@ public class UsersController  extends Controller {
 
                         Long id = json.findPath("id").asLong();
 
-                        long userCount = (long) entityManager.createNativeQuery("select count(*) from users u where id =" + id, Long.class).getSingleResult();
-                        if(userCount == 0){
-                            resultOfFuture.put("status", "error");
-                            resultOfFuture.put("message", "User with id: " + id + " does not exists!");
-                            return resultOfFuture;
-                        }
-
                         User user = entityManager.find(User.class, id);
 
                         entityManager.remove(user);

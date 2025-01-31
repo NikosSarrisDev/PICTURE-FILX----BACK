@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execition_context.DatabaseExecutionContext;
+import jakarta.persistence.Tuple;
 import models.Movies.Movie;
 import models.View.View;
 import models.room.Room;
@@ -278,8 +279,8 @@ public class ViewsController extends Controller {
                     String orderCol = json.findPath("orderCol").asText();
                     String descAsc = json.findPath("descAsc").asText();
                     Long id = json.findPath("id").asLong();
-                    Long movieId = json.findPath("movie_id").asLong();
-                    Long roomId = json.findPath("room_id").asLong();
+                    Long movieId = json.findPath("movieId").asLong();
+                    Long roomId = json.findPath("roomId").asLong();
                     String startTimeStr = json.findPath("startTime").asText();
                     String endTimeStr = json.findPath("endTime").asText();
                     String dateStr = json.findPath("date").asText();
@@ -290,13 +291,10 @@ public class ViewsController extends Controller {
                     LocalTime endTime = endTimeStr.isEmpty() ? null : LocalTime.parse(endTimeStr);
                     LocalDate date = dateStr.isEmpty() ? null : LocalDate.parse(dateStr);
 
-                    String sql = "SELECT * FROM views v WHERE 1=1";
+                    String sql = "select * from views v join rooms r on v.room_id = r.id WHERE 1=1";
 
                     if (date != null) {
                         sql += " and v.date = '" + date + "'";
-                    }
-                    if (id != null && id > 0) {
-                        sql += " and v.id = " + id;
                     }
                     if (movieId != null && movieId > 0) {
                         sql += " and v.movie_id = " + movieId;
@@ -309,12 +307,12 @@ public class ViewsController extends Controller {
                     }
 
                     //All the users till now i mean before the limit and order by
-                    List<View> listAll = (List<View>) entityManager.createNativeQuery(sql, View.class).getResultList();
+                    List<Tuple> listAll = (List<Tuple>) entityManager.createNativeQuery(sql, Tuple.class).getResultList();
 
                     if (orderCol != null && !orderCol.equalsIgnoreCase("")) {
                         sql += " order by " + orderCol + " " + descAsc;
                     } else {
-                        sql += " order by id asc";
+                        sql += " order by v.id asc";
                     }
                     if (start != null && !start.equalsIgnoreCase("")) {
                         sql += " limit " + start + "," + limit;
@@ -322,16 +320,18 @@ public class ViewsController extends Controller {
 
                     HashMap<String, Object> returnListFuture = new HashMap<>();
                     List<HashMap<String, Object>> finalList = new ArrayList<>();
-                    List<View> list = (List<View>) entityManager.createNativeQuery(sql, View.class).getResultList();
+                    List<Tuple> list = (List<Tuple>) entityManager.createNativeQuery(sql, Tuple.class).getResultList();
 
-                    for (View view : list) {
+                    for (Tuple tuple : list) {
                         HashMap<String, Object> officeMap = new HashMap<>();
-                        officeMap.put("id", view.getId());
-                        officeMap.put("movieId", view.getMovie().getId());
-                        officeMap.put("roomId", view.getRoom().getId());
-                        officeMap.put("startTime", view.getStartTime().toString());
-                        officeMap.put("endTime", view.getEndTime().toString());
-                        officeMap.put("date", view.getDate().toString());
+                        officeMap.put("id", tuple.get("id"));
+                        officeMap.put("movieId", tuple.get("movie_id"));
+                        officeMap.put("roomId", tuple.get("room_id"));
+                        officeMap.put("roomTitle", tuple.get("title"));
+                        officeMap.put("availableNumberOfSeats", tuple.get("availableNumberOfSeats"));
+                        officeMap.put("startTime", tuple.get("start_time").toString());
+                        officeMap.put("endTime", tuple.get("end_time").toString());
+                        officeMap.put("date", tuple.get("date").toString());
 
                         finalList.add(officeMap);
                     }
