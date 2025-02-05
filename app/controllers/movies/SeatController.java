@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execition_context.DatabaseExecutionContext;
+import jakarta.persistence.Tuple;
 import models.room.Room;
 import models.seat.Seat;
 import play.db.jpa.JPAApi;
@@ -51,13 +52,19 @@ public class SeatController extends Controller {
                         ObjectNode resultOfFuture = Json.newObject();
 
                         String title = json.findPath("title").asText();
-                        int row = json.findPath("row").asInt();
-                        int col = json.findPath("col").asInt();
+                        int row = json.findPath("rowSeat").asInt();
+                        int col = json.findPath("colSeat").asInt();
                         boolean reserved = json.findPath("reserved").asBoolean();
                         Long roomId = json.findPath("room_id").asLong();
 
                         //Use the room_id from the json to find that room
                         Room room = entityManager.find(Room.class, roomId);
+
+                        if (room == null){
+                            resultOfFuture.put("status", "error");
+                            resultOfFuture.put("message","Το δωμάτιο αυτό δεν υπάρχει");
+                            return resultOfFuture;
+                        }
 
                         Seat seat = new Seat();
 
@@ -209,22 +216,27 @@ public class SeatController extends Controller {
                     String descAsc = json.findPath("descAsc").asText();
                     String id = json.findPath("id").asText();
                     String title = json.findPath("title").asText();
+                    String roomId = json.findPath("roomId").asText();
+                    String roomTitle = json.findPath("roomTitle").asText();
                     String start = json.findPath("start").asText();
                     String limit = json.findPath("limit").asText();
 
-                    String sql = "select * from seats s where 1=1";
+                    String sql = "select s.id, s.rowSeat, s.colSeat, s.room_id, s.title AS seat_title, r.title AS room_title from seats s join rooms r on s.room_id = r.id where 1=1";
 
                     if(title != null && !title.equalsIgnoreCase("") && !title.equalsIgnoreCase("null")){
-                        sql += " and (r.title) like " + "'%" + title + "%'";
+                        sql += " and (s.title) like " + "'%" + title + "%'";
+                    }
+                    if(roomTitle != null && !roomTitle.equalsIgnoreCase("") && !roomTitle.equalsIgnoreCase("null")){
+                        sql += " and (r.title) like " + "'%" + roomTitle + "%'";
                     }
 
                     //All the users till now i mean before the limit and order by
-                    List<Seat> listAll = (List<Seat>) entityManager.createNativeQuery(sql, Seat.class).getResultList();
+                    List<Tuple> listAll = (List<Tuple>) entityManager.createNativeQuery(sql, Tuple.class).getResultList();
 
                     if(orderCol != null && !orderCol.equalsIgnoreCase("")){
                         sql += " order by " + orderCol + " " + descAsc;
                     }else {
-                        sql += " order by id asc";
+                        sql += " order by s.id asc";
                     }
                     if(start != null && !start.equalsIgnoreCase("")){
                         sql += " limit " + start + "," + limit;
@@ -232,17 +244,16 @@ public class SeatController extends Controller {
 
                     HashMap<String, Object> returnListFuture = new HashMap<>();
                     List<HashMap<String, Object>> finalList = new ArrayList<>();
-                    List<Seat> list = (List<Seat>) entityManager.createNativeQuery(sql, Seat.class).getResultList();
+                    List<Tuple> list = (List<Tuple>) entityManager.createNativeQuery(sql, Tuple.class).getResultList();
 
-                    for (Seat seat : list) {
+                    for (Tuple tuple : list) {
                         HashMap<String, Object> officeMap = new HashMap<>();
-                        officeMap.put("id", seat.getId());
-                        officeMap.put("orderCol", orderCol);
-                        officeMap.put("descAsc", descAsc);
-                        officeMap.put("title", seat.getTitle());
-                        officeMap.put("row", seat.getRow());
-                        officeMap.put("col", seat.getCol());
-                        officeMap.put("room_id", seat.getRoom());
+                        officeMap.put("id", tuple.get("id"));
+                        officeMap.put("title", tuple.get("seat_title"));
+                        officeMap.put("roomTitle", tuple.get("room_title"));
+                        officeMap.put("row", tuple.get("rowSeat"));
+                        officeMap.put("col", tuple.get("colSeat"));
+                        officeMap.put("room_id", tuple.get("room_id"));
 
                         finalList.add(officeMap);
                     }

@@ -51,6 +51,7 @@ public class RoomsController extends Controller {
                         String description = json.findPath("description").asText();
                         String quickText = json.findPath("quickText").asText();
                         int availableNumberOfSeats = json.findPath("availableNumberOfSeats").asInt();
+                        double ticketPrice = json.findPath("ticketPrice").asDouble();
                         String thumbnail = json.findPath("thumbnail").asText();
                         String image1 = json.findPath("image1").asText();
                         String image2 = json.findPath("image2").asText();
@@ -114,6 +115,7 @@ public class RoomsController extends Controller {
                         String description = json.findPath("description").asText();
                         String quickText = json.findPath("quickText").asText();
                         int availableNumberOfSeats = json.findPath("availableNumberOfSeats").asInt();
+                        double ticketPrice = json.findPath("ticketPrice").asDouble();
                         String thumbnail = json.findPath("thumbnail").asText();
                         String image1 = json.findPath("image1").asText();
                         String image2 = json.findPath("image2").asText();
@@ -259,6 +261,7 @@ public class RoomsController extends Controller {
                         officeMap.put("description", room.getDescription());
                         officeMap.put("quickText", room.getQuickText());
                         officeMap.put("availableNumberOfSeats", room.getAvailableNumberOfSeats());
+                        officeMap.put("ticketPrice", room.getTicketPrice());
                         officeMap.put("thumbnail", room.getThumbnail());
                         officeMap.put("image1", room.getImage1());
                         officeMap.put("image2", room.getImage2());

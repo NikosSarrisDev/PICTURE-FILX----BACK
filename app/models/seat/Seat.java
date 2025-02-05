@@ -17,9 +17,9 @@ public class Seat {
 
     private String title;
 
-    private int row;
+    private int rowSeat;
 
-    private int col;
+    private int colSeat;
 
     private boolean reserved;
 
@@ -44,19 +44,19 @@ public class Seat {
     }
 
     public int getRow() {
-        return row;
+        return rowSeat;
     }
 
-    public void setRow(int row) {
-        this.row = row;
+    public void setRow(int rowSeat) {
+        this.rowSeat = rowSeat;
     }
 
     public int getCol() {
-        return col;
+        return colSeat;
     }
 
-    public void setCol(int col) {
-        this.col = col;
+    public void setCol(int colSeat) {
+        this.colSeat = colSeat;
     }
 
     public boolean isReserved() {
@@ -79,11 +79,11 @@ public class Seat {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Seat seat)) return false;
-        return row == seat.row && col == seat.col && reserved == seat.reserved && Objects.equals(id, seat.id) && Objects.equals(room, seat.room);
+        return rowSeat == seat.rowSeat && colSeat == seat.colSeat && reserved == seat.reserved && Objects.equals(id, seat.id) && Objects.equals(title, seat.title) && Objects.equals(room, seat.room);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, row, col, reserved, room);
+        return Objects.hash(id, title, rowSeat, colSeat, reserved, room);
     }
 }

@@ -26,6 +26,8 @@ public class Room {
 
     private int availableNumberOfSeats;
 
+    private double ticketPrice;
+
     @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Seat> seats = new HashSet<>();
 
@@ -94,6 +96,14 @@ public class Room {
 
     public void setAvailableNumberOfSeats(int availableNumberOfSeats) {
         this.availableNumberOfSeats = availableNumberOfSeats;
+    }
+
+    public double getTicketPrice() {
+        return ticketPrice;
+    }
+
+    public void setTicketPrice(double ticketPrice) {
+        this.ticketPrice = ticketPrice;
     }
 
     public Set<Seat> getSeats() {
