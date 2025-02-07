@@ -23,6 +23,8 @@ public class Seat {
 
     private boolean reserved;
 
+    private boolean selected;
+
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
@@ -67,6 +69,14 @@ public class Seat {
         this.reserved = reserved;
     }
 
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
     public Room getRoom() {
         return room;
     }
@@ -79,11 +89,11 @@ public class Seat {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Seat seat)) return false;
-        return rowSeat == seat.rowSeat && colSeat == seat.colSeat && reserved == seat.reserved && Objects.equals(id, seat.id) && Objects.equals(title, seat.title) && Objects.equals(room, seat.room);
+        return rowSeat == seat.rowSeat && colSeat == seat.colSeat && reserved == seat.reserved && selected == seat.selected && Objects.equals(id, seat.id) && Objects.equals(title, seat.title) && Objects.equals(room, seat.room);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, rowSeat, colSeat, reserved, room);
+        return Objects.hash(id, title, rowSeat, colSeat, reserved, selected, room);
     }
 }

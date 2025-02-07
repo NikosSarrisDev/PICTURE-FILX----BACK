@@ -55,6 +55,7 @@ public class SeatController extends Controller {
                         int row = json.findPath("rowSeat").asInt();
                         int col = json.findPath("colSeat").asInt();
                         boolean reserved = json.findPath("reserved").asBoolean();
+                        boolean selected = json.findPath("selected").asBoolean();
                         Long roomId = json.findPath("room_id").asLong();
 
                         //Use the room_id from the json to find that room
@@ -72,6 +73,7 @@ public class SeatController extends Controller {
                         seat.setRow(row);
                         seat.setCol(col);
                         seat.setReserved(reserved);
+                        seat.setSelected(selected);
                         seat.setRoom(room);
 
                         entityManager.persist(seat);
@@ -117,18 +119,43 @@ public class SeatController extends Controller {
                         int row = json.findPath("row").asInt();
                         int col = json.findPath("col").asInt();
                         boolean reserved = json.findPath("reserved").asBoolean();
+                        boolean selected = json.findPath("selected").asBoolean();
                         Long roomId = json.findPath("room_id").asLong();
-
-                        //Use the room_id from the json to find that room
-                        Room room = entityManager.find(Room.class, roomId);
 
                         Seat seat = entityManager.find(Seat.class, id);
 
-                        seat.setTitle(title);
-                        seat.setRow(row);
-                        seat.setCol(col);
-                        seat.setReserved(reserved);
-                        seat.setRoom(room);
+                        if (seat == null) {
+                            resultOfFuture.put("status", "error");
+                            resultOfFuture.put("message", "Η θέση αυτή δεν υπάρχει");
+                            return resultOfFuture;
+                        }
+
+                        // Only update fields that exist in the request
+                        if (json.has("title") && !json.get("title").isNull()) {
+                            seat.setTitle(title);
+                        }
+                        if (json.has("row") && !json.get("row").isNull()) {
+                            seat.setRow(row);
+                        }
+                        if (json.has("col") && !json.get("col").isNull()) {
+                            seat.setCol(col);
+                        }
+                        if (json.has("reserved") && !json.get("reserved").isNull()) {
+                            seat.setReserved(reserved);
+                        }
+                        if (json.has("selected") && !json.get("selected").isNull()) {
+                            seat.setSelected(selected);
+                        }
+                        if (json.has("room_id") && !json.get("room_id").isNull()) {
+                            Room room = entityManager.find(Room.class, roomId);
+                            if (room != null) {
+                                seat.setRoom(room);
+                            } else {
+                                resultOfFuture.put("status", "error");
+                                resultOfFuture.put("message", "Το δωμάτιο αυτό δεν υπάρχει");
+                                return resultOfFuture;
+                            }
+                        }
 
                         entityManager.merge(seat);
 
@@ -218,10 +245,11 @@ public class SeatController extends Controller {
                     String title = json.findPath("title").asText();
                     String roomId = json.findPath("roomId").asText();
                     String roomTitle = json.findPath("roomTitle").asText();
+                    String selected = json.findPath("selected").asText();
                     String start = json.findPath("start").asText();
                     String limit = json.findPath("limit").asText();
 
-                    String sql = "select s.id, s.rowSeat, s.colSeat, s.room_id, s.title AS seat_title, r.title AS room_title from seats s join rooms r on s.room_id = r.id where 1=1";
+                    String sql = "select s.id, s.rowSeat, s.colSeat, s.room_id, s.title, s.selected AS seat_title, r.title AS room_title from seats s join rooms r on s.room_id = r.id where 1=1";
 
                     if(title != null && !title.equalsIgnoreCase("") && !title.equalsIgnoreCase("null")){
                         sql += " and (s.title) like " + "'%" + title + "%'";
@@ -229,8 +257,10 @@ public class SeatController extends Controller {
                     if(roomTitle != null && !roomTitle.equalsIgnoreCase("") && !roomTitle.equalsIgnoreCase("null")){
                         sql += " and (r.title) like " + "'%" + roomTitle + "%'";
                     }
+                    if(selected != null){
+                        sql += " and (s.selected) = " + selected;
+                    }
 
-                    //All the users till now i mean before the limit and order by
                     List<Tuple> listAll = (List<Tuple>) entityManager.createNativeQuery(sql, Tuple.class).getResultList();
 
                     if(orderCol != null && !orderCol.equalsIgnoreCase("")){
