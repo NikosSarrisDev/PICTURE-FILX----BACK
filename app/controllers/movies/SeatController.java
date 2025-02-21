@@ -1,9 +1,11 @@
 package controllers.movies;
 
+import akka.stream.SystemMaterializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execition_context.DatabaseExecutionContext;
+import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
 import models.room.Room;
 import models.seat.Seat;
@@ -180,6 +182,52 @@ public class SeatController extends Controller {
         }
     }
 
+    public Result updateAllSeat(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+
+        if (json == null) {
+            return badRequest("Invalid Json Format");
+        } else {
+            ObjectNode result = Json.newObject();
+            try {
+                CompletableFuture<JsonNode> updateFuture = CompletableFuture.supplyAsync(() -> {
+                    return jpaApi.withTransaction(entityManager -> {
+                        ObjectNode resultOfFuture = Json.newObject();
+
+                        boolean selected = json.findPath("selected").asBoolean();
+                        boolean reserved = json.findPath("reserved").asBoolean();
+
+                        String sql = "update seats set ";
+                        if (json.has("selected")) {
+                            sql += "selected = " + (selected ? "true" : "false");
+                        }
+                        if (json.has("reserved")) {
+                            sql += "reserved = " + (reserved ? "true" : "false");
+                        }
+
+                        Query query = entityManager.createNativeQuery(sql);
+                        int rowsUpdated = query.executeUpdate();
+
+                        resultOfFuture.put("status", "success");
+                        resultOfFuture.put("rows_updated", rowsUpdated);
+                        resultOfFuture.put("system", "SEATS_ACTIONS");
+                        resultOfFuture.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
+                        return resultOfFuture;
+                    });
+                }, executionContext);
+
+                result = (ObjectNode) updateFuture.get();
+                return ok(result);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Σφάλμα κατά την ενημέρωση");
+                return ok(result);
+            }
+        }
+    }
+
     public Result deleteSeat(final Http.Request request) throws IOException {
 
         JsonNode json = request.body().asJson();
@@ -245,11 +293,12 @@ public class SeatController extends Controller {
                     String title = json.findPath("title").asText();
                     String roomId = json.findPath("roomId").asText();
                     String roomTitle = json.findPath("roomTitle").asText();
-                    String selected = json.findPath("selected").asText();
+                    boolean selected = json.findPath("selected").asBoolean();
+                    boolean reserved = json.findPath("reserved").asBoolean();
                     String start = json.findPath("start").asText();
                     String limit = json.findPath("limit").asText();
 
-                    String sql = "select s.id, s.rowSeat, s.colSeat, s.room_id, s.title, s.selected AS seat_title, r.title AS room_title from seats s join rooms r on s.room_id = r.id where 1=1";
+                    String sql = "select s.id, s.rowSeat, s.colSeat, s.room_id, s.reserved as reserved, s.selected as selected, s.title AS seat_title, r.title AS room_title from seats s join rooms r on s.room_id = r.id where 1=1";
 
                     if(title != null && !title.equalsIgnoreCase("") && !title.equalsIgnoreCase("null")){
                         sql += " and (s.title) like " + "'%" + title + "%'";
@@ -257,8 +306,11 @@ public class SeatController extends Controller {
                     if(roomTitle != null && !roomTitle.equalsIgnoreCase("") && !roomTitle.equalsIgnoreCase("null")){
                         sql += " and (r.title) like " + "'%" + roomTitle + "%'";
                     }
-                    if(selected != null){
-                        sql += " and (s.selected) = " + selected;
+                    if(json.has("selected")){
+                        sql += " and (s.selected) = " + (selected ? 1 : 0);
+                    }
+                    if(json.has("reserved")){
+                        sql += " and (s.reserved) = " + (reserved ? 1 : 0);
                     }
 
                     List<Tuple> listAll = (List<Tuple>) entityManager.createNativeQuery(sql, Tuple.class).getResultList();
@@ -283,6 +335,8 @@ public class SeatController extends Controller {
                         officeMap.put("roomTitle", tuple.get("room_title"));
                         officeMap.put("row", tuple.get("rowSeat"));
                         officeMap.put("col", tuple.get("colSeat"));
+                        officeMap.put("reserved", tuple.get("reserved"));
+                        officeMap.put("selected", tuple.get("selected"));
                         officeMap.put("room_id", tuple.get("room_id"));
 
                         finalList.add(officeMap);

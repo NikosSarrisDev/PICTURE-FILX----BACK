@@ -30,6 +30,7 @@ POST    /getRoom                   controllers.movies.RoomsController.getRoom(re
 
 POST    /addSeat                   controllers.movies.SeatController.addSeat(req: Request)
 POST    /updateSeat                controllers.movies.SeatController.updateSeat(req: Request)
+POST    /updateAllSeat             controllers.movies.SeatController.updateAllSeat(req: Request)
 POST    /deleteSeat                controllers.movies.SeatController.deleteSeat(req: Request)
 POST    /getSeat                   controllers.movies.SeatController.getSeat(req: Request)
 
