@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execition_context.DatabaseExecutionContext;
+import controllers.mailer.EmailService;
 import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
 import models.room.Room;
@@ -17,6 +18,7 @@ import play.mvc.Result;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,12 +32,14 @@ public class SeatController extends Controller {
     private final JPAApi jpaApi;
     private final ObjectMapper objectMapper;
     private final DatabaseExecutionContext executionContext;
+    private final EmailService emailService;
 
     @Inject()
-    public SeatController(JPAApi jpaApi, ObjectMapper objectMapper, DatabaseExecutionContext executionContext) {
+    public SeatController(JPAApi jpaApi, ObjectMapper objectMapper, DatabaseExecutionContext executionContext, EmailService emailService) {
         this.jpaApi = jpaApi;
         this.objectMapper = objectMapper;
         this.executionContext = executionContext;
+        this.emailService = emailService;
     }
 
     public Result addSeat(final Http.Request request) throws IOException {
@@ -268,6 +272,12 @@ public class SeatController extends Controller {
                 return ok(result);
             }
         }
+    }
+
+    public Result sendTicketToUser(final Http.Request request) throws IOException {
+        String[] arr = {"AA-1", "AA-2"};
+        this.emailService.sendTicketToUserEmail("nikolaossarrisnode@gmail.com","movie1","VIP Luxe",arr, new java.sql.Date(System.currentTimeMillis()), new Time(System.currentTimeMillis()), 10.5f);
+        return ok();
     }
 
     public Result getSeat(final Http.Request request) throws IOException, ExecutionException, InterruptedException{
