@@ -327,7 +327,7 @@ public class SeatController extends Controller {
                 this.emailService.sendTicketToUserEmail(userEmail, movieTitle, roomTitle, seatsArray, formattedDate, time, amount);
                 result.put("status", "success");
                 result.put("message", "Τα εισιτήριά σας αποστάλθηκαν στην Αλληλογραφία σας!");
-                return ok(views.html.ticketInstance.render(userEmail, movieTitle, roomTitle, seatsArray, formattedDate, time, amount));
+                return ok(result);
             } catch (Exception e){
                 e.printStackTrace();
                 result.put("status", "error");

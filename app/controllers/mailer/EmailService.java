@@ -60,7 +60,8 @@ public class EmailService {
                 .setSubject("Το Εισιτήριό σας! Καλή σας απόλαυση")
                 .setFrom("PICTURE FLIX <nikolaossarrisnode@gmail.com>")
                 .addTo(recipientEmail)
-                .addAttachment("qrCode.jpg", new File("/Users/nikolaossarris/Downloads/ticket_play_framework/public/images/qrCode.jpg"), "qrcode")
+                .addAttachment("qrCode.jpg", new File("public/images/qrCode.jpg"), "qrcode")
+                .addAttachment("logo.svg", new File("public/images/logo.jpg"), "logo")
                 .setBodyHtml(emailHtml.body());
 
         mailerClient.send(email);
