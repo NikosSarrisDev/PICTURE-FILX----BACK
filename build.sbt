@@ -20,6 +20,8 @@ lazy val root = (project in file("."))
 libraryDependencies += guice
 libraryDependencies += "jakarta.persistence" % "jakarta.persistence-api" % "3.2.0"
 libraryDependencies += "at.favre.lib" % "bcrypt" % "0.10.2"
+libraryDependencies += "com.google.zxing" % "javase" % "3.5.3"
+libraryDependencies += "com.google.zxing" % "core" % "3.5.3"
 
 
 

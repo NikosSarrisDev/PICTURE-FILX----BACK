@@ -5,6 +5,7 @@ import play.libs.mailer.MailerClient;
 import play.twirl.api.Html;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -51,17 +52,15 @@ public class EmailService {
         mailerClient.send(email);
     }
 
-    public void sendTicketToUserEmail(String recipientEmail, String movieTitle, String roomTitle, String[] seats, Date date, Time startTime, float amount) {
+    public void sendTicketToUserEmail(String recipientEmail, String movieTitle, String roomTitle, String[] seats, String date, String startTime, double amount) {
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy");
-        String formattedDate = dateFormat.format(date);
-
-        Html emailHtml = views.html.ticketInstance.render(recipientEmail, movieTitle, roomTitle, seats, formattedDate, startTime.toString(), amount);
+        Html emailHtml = views.html.ticketInstance.render(recipientEmail, movieTitle, roomTitle, seats, date, startTime, amount);
 
         Email email = new Email()
                 .setSubject("Το Εισιτήριό σας! Καλή σας απόλαυση")
                 .setFrom("PICTURE FLIX <nikolaossarrisnode@gmail.com>")
                 .addTo(recipientEmail)
+                .addAttachment("qrCode.jpg", new File("/Users/nikolaossarris/Downloads/ticket_play_framework/public/images/qrCode.jpg"), "qrcode")
                 .setBodyHtml(emailHtml.body());
 
         mailerClient.send(email);

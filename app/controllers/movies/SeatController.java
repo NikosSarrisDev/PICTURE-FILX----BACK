@@ -4,6 +4,13 @@ import akka.stream.SystemMaterializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.jaiimageio.impl.common.ImageUtil;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import controllers.base64Converter.ImageUtils;
 import controllers.execition_context.DatabaseExecutionContext;
 import controllers.mailer.EmailService;
 import jakarta.persistence.Query;
@@ -18,7 +25,8 @@ import play.mvc.Result;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.sql.Time;
+import java.nio.file.Paths;
+import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -274,10 +282,64 @@ public class SeatController extends Controller {
         }
     }
 
-    public Result sendTicketToUser(final Http.Request request) throws IOException {
-        String[] arr = {"AA-1", "AA-2"};
-        this.emailService.sendTicketToUserEmail("nikolaossarrisnode@gmail.com","movie1","VIP Luxe",arr, new java.sql.Date(System.currentTimeMillis()), new Time(System.currentTimeMillis()), 10.5f);
-        return ok();
+    public Result sendTicketToUser(final Http.Request request) throws IOException, WriterException {
+        JsonNode json = request.body().asJson();
+        if(json==null){
+            return badRequest("Invalid Json Format");
+        } else {
+
+            ObjectNode result = Json.newObject();
+
+            //QR Code initialization
+            String data = "http://localhost:9000/welcomeScanMessage";
+            String path= "/Users/nikolaossarris/Downloads/ticket_play_framework/public/images/qrCode.jpg";
+
+            BitMatrix matrix = new MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, 500, 500);
+
+            //Store the qr code icon in the static files of play
+            MatrixToImageWriter.writeToPath(matrix, "jpg", Paths.get(path));
+
+            try{
+
+                String userEmail = json.findPath("userEmail").asText();
+                String movieTitle = json.findPath("movieTitle").asText();
+                String roomTitle = json.findPath("roomTitle").asText();
+                JsonNode seatsNode = json.findPath("seats");
+                String date = json.findPath("date").asText();
+                String time = json.findPath("time").asText();
+                double amount = json.findPath("amount").asDouble();
+
+                String[] seatsArray = {};
+                if (seatsNode.isArray()) {
+                    seatsArray = new String[seatsNode.size()];
+                    for (int i = 0; i < seatsNode.size(); i++) {
+                        seatsArray[i] = seatsNode.get(i).asText();
+                    }
+                }
+
+                //Convert String date to java.sql.Date
+                Date sqlDate = Date.valueOf(date);
+
+                //Format the date in the ticket with a proper format
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy");
+                String formattedDate = dateFormat.format(sqlDate);
+
+                this.emailService.sendTicketToUserEmail(userEmail, movieTitle, roomTitle, seatsArray, formattedDate, time, amount);
+                result.put("status", "success");
+                result.put("message", "Τα εισιτήριά σας αποστάλθηκαν στην Αλληλογραφία σας!");
+                return ok(views.html.ticketInstance.render(userEmail, movieTitle, roomTitle, seatsArray, formattedDate, time, amount));
+            } catch (Exception e){
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Σφάλμα κατά την αποστολή στην Αλληλογραφία");
+                return ok(result);
+            }
+        }
+    }
+
+    //This Action is used for display the welcome message when after the scan of the qr code
+    public Result welcomeScanMessage(final Http.Request request) throws IOException {
+        return ok(views.html.welcomeScreenMessage.render());
     }
 
     public Result getSeat(final Http.Request request) throws IOException, ExecutionException, InterruptedException{
