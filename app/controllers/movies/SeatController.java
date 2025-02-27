@@ -206,6 +206,8 @@ public class SeatController extends Controller {
                     return jpaApi.withTransaction(entityManager -> {
                         ObjectNode resultOfFuture = Json.newObject();
 
+                        String idList = json.findPath("idList").asText();
+                        String seatTitleList = json.findPath("seatTitleList").asText();
                         boolean selected = json.findPath("selected").asBoolean();
                         boolean reserved = json.findPath("reserved").asBoolean();
 
@@ -216,6 +218,12 @@ public class SeatController extends Controller {
                         if (json.has("reserved")) {
                             sql += "reserved = " + (reserved ? "true" : "false");
                         }
+                        if (idList != null && !idList.equalsIgnoreCase("") && !idList.equalsIgnoreCase("null") && (json.has("selected") || json.has("reserved"))) {
+                            sql += " where id in " + "(" + idList + ")";
+                        }
+                        if (seatTitleList != null && !seatTitleList.equalsIgnoreCase("") && !seatTitleList.equalsIgnoreCase("null") && (json.has("selected") || json.has("reserved"))) {
+                            sql += " where title in " + "(" + seatTitleList + ")";
+                        }
 
                         Query query = entityManager.createNativeQuery(sql);
                         int rowsUpdated = query.executeUpdate();
@@ -223,7 +231,7 @@ public class SeatController extends Controller {
                         resultOfFuture.put("status", "success");
                         resultOfFuture.put("rows_updated", rowsUpdated);
                         resultOfFuture.put("system", "SEATS_ACTIONS");
-                        resultOfFuture.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
+                        resultOfFuture.put("message", "Η μαζική ενημέρωση ολοκληρώθηκε με επιτυχία!");
                         return resultOfFuture;
                     });
                 }, executionContext);
