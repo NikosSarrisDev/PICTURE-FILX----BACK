@@ -20,7 +20,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -53,7 +55,7 @@ public class ViewsController extends Controller {
                         ObjectNode resultOfFuture = Json.newObject();
 
                         Long movie_id = json.findPath("movie_id").asLong();
-                        JsonNode roomIdsNode = json.findPath("room_ids");
+                        Long room_id = json.findPath("room_id").asLong();
                         String startTimeStr = json.findPath("startTime").asText();
                         String endTimeStr = json.findPath("endTime").asText();
                         String dateStr = json.findPath("date").asText();
@@ -62,14 +64,6 @@ public class ViewsController extends Controller {
                         LocalTime endTime = LocalTime.parse(endTimeStr);
                         LocalDate date = LocalDate.parse(dateStr);
 
-                        List<Long> roomIds = new ArrayList<>();
-
-                        if (roomIdsNode.isArray()) {
-                            for (JsonNode node : roomIdsNode) {
-                                roomIds.add(node.asLong());
-                            }
-                        }
-
                         if (startTime.isAfter(endTime)) {
                             resultOfFuture.put("status", "error");
                             resultOfFuture.put("message", "Η ώρα αρχής δεν μπορεί να είναι μεγαλύτερη από την ώρα τέλους!");
@@ -77,8 +71,7 @@ public class ViewsController extends Controller {
                         }
 
                         Movie movie = entityManager.find(Movie.class, movie_id);
-
-                        List<Room> rooms = entityManager.createNativeQuery("select * from rooms r where r.id in (" + roomIds + ")").getResultList();
+                        Room room = entityManager.find(Room.class, room_id);
 
                         if (movie == null) {
                             resultOfFuture.put("status", "error");
@@ -86,21 +79,26 @@ public class ViewsController extends Controller {
                             return resultOfFuture;
                         }
 
+                        if (room == null) {
+                            resultOfFuture.put("status", "error");
+                            resultOfFuture.put("message", "Η αίθουσα δεν βρέθηκε");
+                            return resultOfFuture;
+                        }
+
                         //Έλενχος αν το υπάρχει εκείνη τη στιγμή μια προβολή στη σιγκεκριμένη αίθουσα
-                        String query = "SELECT COUNT(*) FROM views v " +
-                                "JOIN room_view rv ON v.id = rv.view_id " +
-                                "WHERE rv.room_id IN (" + roomIds + ") " +
-                                "AND v.date = '" + date + "' " +
-                                "AND (v.start_time < '" + endTime + "' AND v.end_time > '" + startTime + "')";
+                        String query = "SELECT COUNT(*) FROM views " +
+                                "WHERE room_id = " + room_id +
+                                " AND date = '" + date + "'" +
+                                " AND ((start_time < '" + endTime + "' AND end_time > '" + startTime + "'))";
+
 
                         long count = ((Number) entityManager.createNativeQuery(query).getSingleResult()).longValue();
 
                         if (count > 0) {
                             resultOfFuture.put("status", "error");
-                            resultOfFuture.put("message", "Το δωμάτιο είναι ήδη πιασμένο για εκείνη τη χρονική περίοδο");
+                            resultOfFuture.put("message", "Το δωμάτιο αυτό είναι πιασμένο για εκείνη τη χρονική περίοδο");
                             return resultOfFuture;
                         }
-
 
                         View view = new View();
 
@@ -108,7 +106,7 @@ public class ViewsController extends Controller {
                         view.setEndTime(endTime);
                         view.setDate(date);
                         view.setMovie(movie);
-                        view.setRooms(new HashSet<>(rooms));
+                        view.setRoom(room);
 
                         entityManager.persist(view);
 
@@ -150,7 +148,7 @@ public class ViewsController extends Controller {
 
                         Long id = json.findPath("id").asLong();
                         Long movie_id = json.findPath("movie_id").asLong();
-                        JsonNode roomIdsNode = json.findPath("room_ids");
+                        Long room_id = json.findPath("room_id").asLong();
                         String startTimeStr = json.findPath("startTime").asText();
                         String endTimeStr = json.findPath("endTime").asText();
                         String dateStr = json.findPath("date").asText();
@@ -159,16 +157,8 @@ public class ViewsController extends Controller {
                         LocalTime endTime = LocalTime.parse(endTimeStr);
                         LocalDate date = LocalDate.parse(dateStr);
 
-                        List<Long> roomIds = new ArrayList<>();
-
-                        if (roomIdsNode.isArray()) {
-                            for (JsonNode node : roomIdsNode) {
-                                roomIds.add(node.asLong());
-                            }
-                        }
-
                         Movie movie = entityManager.find(Movie.class, movie_id);
-                        List<Room> rooms = entityManager.createNativeQuery("select * from rooms r where r.id in (" + roomIds + ")").getResultList();
+                        Room room = entityManager.find(Room.class, room_id);
 
                         if (movie == null) {
                             resultOfFuture.put("status", "error");
@@ -176,18 +166,24 @@ public class ViewsController extends Controller {
                             return resultOfFuture;
                         }
 
+                        if (room == null) {
+                            resultOfFuture.put("status", "error");
+                            resultOfFuture.put("message", "Η αίθουσα δεν βρέθηκε");
+                            return resultOfFuture;
+                        }
+
                         //Έλενχος αν το υπάρχει εκείνη τη στιγμή μια προβολή στη σιγκεκριμένη αίθουσα
-                        String query = "SELECT COUNT(*) FROM views v " +
-                                "JOIN room_view rv ON v.id = rv.view_id " +
-                                "WHERE rv.room_id IN (" + roomIds + ") " +
-                                "AND v.date = '" + date + "' " +
-                                "AND (v.start_time < '" + endTime + "' AND v.end_time > '" + startTime + "')";
+                        String query = "SELECT COUNT(*) FROM views " +
+                                "WHERE room_id = " + room_id +
+                                " AND date = '" + date + "'" +
+                                " AND ((start_time < '" + endTime + "' AND end_time > '" + startTime + "'))";
+
 
                         long count = ((Number) entityManager.createNativeQuery(query).getSingleResult()).longValue();
 
                         if (count > 0) {
                             resultOfFuture.put("status", "error");
-                            resultOfFuture.put("message", "Το δωμάτιο είναι ήδη πιασμένο για εκείνη τη χρονική περίοδο");
+                            resultOfFuture.put("message", "Το δωμάτιο αυτό είναι πιασμένο για εκείνη τη χρονική περίοδο");
                             return resultOfFuture;
                         }
 
@@ -197,7 +193,7 @@ public class ViewsController extends Controller {
                         view.setEndTime(endTime);
                         view.setDate(date);
                         view.setMovie(movie);
-                        view.setRooms(new HashSet<>(rooms));
+                        view.setRoom(room);
 
                         entityManager.merge(view);
 
@@ -295,7 +291,7 @@ public class ViewsController extends Controller {
                     LocalTime endTime = endTimeStr.isEmpty() ? null : LocalTime.parse(endTimeStr);
                     LocalDate date = dateStr.isEmpty() ? null : LocalDate.parse(dateStr);
 
-                    String sql = "select * from views v join view_room vr on v.id = vr.view_id join rooms r on vr.room_id = r.id WHERE 1=1";
+                    String sql = "select * from views v join rooms r on v.room_id = r.id WHERE 1=1";
 
                     if (date != null) {
                         sql += " and v.date = '" + date + "'";
@@ -304,7 +300,7 @@ public class ViewsController extends Controller {
                         sql += " and v.movie_id = " + movieId;
                     }
                     if (roomId != null && roomId > 0) {
-                        sql += " and vr.room_id = " + roomId;
+                        sql += " and v.room_id = " + roomId;
                     }
                     if (startTime != null && endTime != null) {
                         sql += " and (v.start_time < '" + endTime + "' and v.end_time > '" + startTime + "')";
