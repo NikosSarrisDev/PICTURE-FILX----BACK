@@ -7,6 +7,7 @@ import models.room.Room;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "views", schema = "PICTURE_FLIX")
@@ -28,9 +29,8 @@ public class View {
     @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
 
-    @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
+    @ManyToMany(mappedBy = "views")
+    private Set<Room> rooms;
 
     public Long getId() {
         return id;
@@ -72,23 +72,23 @@ public class View {
         this.movie = movie;
     }
 
-    public Room getRoom() {
-        return room;
+    public Set<Room> getRooms() {
+        return rooms;
     }
 
-    public void setRoom(Room room) {
-        this.room = room;
+    public void setRooms(Set<Room> rooms) {
+        this.rooms = rooms;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof View view)) return false;
-        return Objects.equals(id, view.id) && Objects.equals(startTime, view.startTime) && Objects.equals(endTime, view.endTime) && Objects.equals(date, view.date) && Objects.equals(movie, view.movie) && Objects.equals(room, view.room);
+        return Objects.equals(id, view.id) && Objects.equals(startTime, view.startTime) && Objects.equals(endTime, view.endTime) && Objects.equals(date, view.date) && Objects.equals(movie, view.movie) && Objects.equals(rooms, view.rooms);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, startTime, endTime, date, movie, room);
+        return Objects.hash(id, startTime, endTime, date, movie, rooms);
     }
 }
