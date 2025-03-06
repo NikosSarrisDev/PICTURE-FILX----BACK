@@ -65,6 +65,7 @@ public class RoomsController extends Controller {
                         room.setDescription(description);
                         room.setQuickText(quickText);
                         room.setAvailableNumberOfSeats(availableNumberOfSeats);
+                        room.setTicketPrice(ticketPrice);
                         room.setThumbnail(thumbnail);
                         room.setImage1(image1);
                         room.setImage2(image2);
@@ -125,16 +126,39 @@ public class RoomsController extends Controller {
 
                         Room room = entityManager.find(Room.class, id);
 
-                        room.setTitle(title);
-                        room.setDescription(description);
-                        room.setQuickText(quickText);
-                        room.setAvailableNumberOfSeats(availableNumberOfSeats);
-                        room.setThumbnail(thumbnail);
-                        room.setImage1(image1);
-                        room.setImage2(image2);
-                        room.setImage3(image3);
-                        room.setImage4(image4);
-                        room.setImage5(image5);
+                        if (json.has("title")) {
+                            room.setTitle(title);
+                        }
+                        if (json.has("description")) {
+                            room.setDescription(description);
+                        }
+                        if (json.has("quickText")) {
+                            room.setQuickText(quickText);
+                        }
+                        if (json.has("availableNumberOfSeats")) {
+                            room.setAvailableNumberOfSeats(availableNumberOfSeats);
+                        }
+                        if (json.has("ticketPrice")) {
+                            room.setTicketPrice(ticketPrice);
+                        }
+                        if (json.has("thumbnail")) {
+                            room.setThumbnail(thumbnail);
+                        }
+                        if (json.has("image1")) {
+                            room.setImage1(image1);
+                        }
+                        if (json.has("image2")) {
+                            room.setImage2(image2);
+                        }
+                        if (json.has("image3")) {
+                            room.setImage3(image3);
+                        }
+                        if (json.has("image4")) {
+                            room.setImage4(image4);
+                        }
+                        if (json.has("image5")) {
+                            room.setImage5(image5);
+                        }
 
                         entityManager.merge(room);
 

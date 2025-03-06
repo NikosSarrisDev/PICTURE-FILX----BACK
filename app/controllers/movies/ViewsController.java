@@ -189,11 +189,21 @@ public class ViewsController extends Controller {
 
                         View view = entityManager.find(View.class, id);
 
-                        view.setStartTime(startTime);
-                        view.setEndTime(endTime);
-                        view.setDate(date);
-                        view.setMovie(movie);
-                        view.setRoom(room);
+                        if (json.has("startTime")) {
+                            view.setStartTime(startTime);
+                        }
+                        if (json.has("endTime")) {
+                            view.setEndTime(endTime);
+                        }
+                        if (json.has("date")) {
+                            view.setDate(date);
+                        }
+                        if (json.has("movie")) {
+                            view.setMovie(movie);
+                        }
+                        if (json.has("room")) {
+                            view.setRoom(room);
+                        }
 
                         entityManager.merge(view);
 

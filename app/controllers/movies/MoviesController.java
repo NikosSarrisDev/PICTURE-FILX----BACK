@@ -169,26 +169,56 @@ public class MoviesController extends Controller {
 
                         Movie movie = entityManager.find(Movie.class, id);
 
-                        movie.setTitle(title);
-                        movie.setDescription(description);
-                        movie.setDirector(director);
-                        movie.setProducer(producer);
-                        movie.setRating(rating);
-                        movie.setDuration(duration);
-                        movie.setType(type);
-                        movie.setTrailerCode(trailerCode);
-                        movie.setRated(rated);
-                        movie.setWikiLink(wikiLink);
+                        if (json.has("title")) {
+                            movie.setTitle(title);
+                        }
+                        if (json.has("description")) {
+                            movie.setDescription(description);
+                        }
+                        if (json.has("director")) {
+                            movie.setDirector(director);
+                        }
+                        if (json.has("producer")) {
+                            movie.setProducer(producer);
+                        }
+                        if (json.has("rating")) {
+                            movie.setRating(rating);
+                        }
+                        if (json.has("duration")) {
+                            movie.setDuration(duration);
+                        }
+                        if (json.has("type")) {
+                            movie.setType(type);
+                        }
+                        if (json.has("trailerCode")) {
+                            movie.setTrailerCode(trailerCode);
+                        }
+                        if (json.has("rated")) {
+                            movie.setRated(rated);
+                        }
+                        if (json.has("wikiLink")) {
+                            movie.setWikiLink(wikiLink);
+                        }
+
                         try{
-                            movie.setReleaseDate(new SimpleDateFormat("yyyy-MM-dd").parse(releaseDate));
+                            if (json.has("releaseDate")) {
+                                movie.setReleaseDate(new SimpleDateFormat("yyyy-MM-dd").parse(releaseDate));
+                            }
                         }catch (Exception e){
                             resultOfFuture.put("status", "error");
                             resultOfFuture.put("message", "Η ημερομηνία δεν έχει τη σωστή μορφή");
                             return resultOfFuture;
                         }
-                        movie.setTicketCount(ticketCount);
-                        movie.setThumbnail(thumbnail);
-                        movie.setActors(actors);
+
+                        if (json.has("ticketCount")) {
+                            movie.setTicketCount(ticketCount);
+                        }
+                        if (json.has("thumbnail")) {
+                            movie.setThumbnail(thumbnail);
+                        }
+                        if (json.has("actors")) {
+                            movie.setActors(actors);
+                        }
 
                         entityManager.merge(movie);
 
@@ -333,6 +363,7 @@ public class MoviesController extends Controller {
                             officeMap.put("director", movie.getDirector());
                             officeMap.put("producer", movie.getProducer());
                             officeMap.put("releaseDate", movie.getReleaseDate());
+                            officeMap.put("ticketCounter", movie.getTicketCount());
                             officeMap.put("type", movie.getType());
                             officeMap.put("rated", movie.getRated());
                             officeMap.put("wikiLink", movie.getWikiLink());

@@ -8,8 +8,10 @@ GET     /verify-email               controllers.User.UsersController.verifyEmail
 POST    /createUser                 controllers.User.UsersController.createUser(req: Request)
 POST    /loginUser                  controllers.User.UsersController.loginUser(req: Request)
 POST    /users/all                  controllers.User.UsersController.getAllUsers
+POST    /getUser                    controllers.User.UsersController.getUser(req: Request)
 POST    /forgotPasswordSendEmail    controllers.User.UsersController.forgotPasswordSendEmail(req: Request)
 POST    /updateUserPassword         controllers.User.UsersController.updateUserPassword(req: Request)
+POST    /updateUserDetails          controllers.User.UsersController.updateUserDetails(req: Request)
 POST    /deleteUser                 controllers.User.UsersController.deleteUser(req: Request)
 
 #//User contact with the admin

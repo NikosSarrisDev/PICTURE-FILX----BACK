@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigException;
 import controllers.execition_context.DatabaseExecutionContext;
 import controllers.mailer.EmailService;
+import models.Movies.Movie;
 import models.User.User;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
@@ -17,10 +18,16 @@ import play.mvc.Result;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+
 import controllers.EncryptDecrypt.EncryptDecrypt;
 public class UsersController  extends Controller {
 
@@ -56,6 +63,8 @@ public class UsersController  extends Controller {
                         String email = json.findPath("email").asText();
                         String password = json.findPath("password").asText();
                         String role = json.findPath("role").asText();
+                        String phone  = json.findPath("phone").asText();
+                        String photo = json.findPath("photo").asText();
                         String hashedPassword = "@@@@";
 
                         try {
@@ -87,6 +96,8 @@ public class UsersController  extends Controller {
                             return resultOfFuture;
                         }
                         user.setPassword(hashedPassword);
+                        user.setPhone(phone);
+                        user.setPhoto(photo);
 
                         entityManager.persist(user);
 
@@ -115,6 +126,73 @@ public class UsersController  extends Controller {
         }
     }
 
+    public Result updateUserDetails(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if(json == null) {
+            return badRequest("Invalid JsonFormat");
+        } else {
+
+            ObjectNode result = Json.newObject();
+
+            try {
+                CompletableFuture<JsonNode> updateFuture = CompletableFuture.supplyAsync(() -> {
+                    return jpaApi.withTransaction(entityManager -> {
+
+                        ObjectNode resultOfFuture = Json.newObject();
+
+                        Long id = json.findPath("id").asLong();
+                        String name = json.findPath("name").asText();
+                        String email = json.findPath("email").asText();
+                        String role = json.findPath("role").asText();
+                        String phone = json.findPath("phone").asText();
+                        String photo = json.findPath("photo").asText();
+                        boolean hasEntered = json.findPath("hasEntered").asBoolean();
+                        int numOfTickets = json.findPath("numOfTickets").asInt();
+
+                        User user = entityManager.find(User.class, id);
+
+                        if (json.has("name")) {
+                            user.setName(name);
+                        }
+                        if (json.has("email")) {
+                            user.setEmail(email);
+                        }
+                        if (json.has("role")) {
+                            user.setRole(role);
+                        }
+                        if (json.has("phone")) {
+                            user.setPhone(phone);
+                        }
+                        if (json.has("photo")) {
+                            user.setPhoto(photo);
+                        }
+                        if (json.has("hasEntered")) {
+                            user.setHasEntered(hasEntered);
+                        }
+                        if (json.has("numOfTickets")) {
+                            user.setNumOfTickets(numOfTickets);
+                        }
+
+                        entityManager.merge(user);
+
+                        resultOfFuture.put("status", "success");
+                        resultOfFuture.put("DO_IT", user.getId());
+                        resultOfFuture.put("system", "USERS_ACTIONS");
+                        resultOfFuture.put("message", "Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
+                        return resultOfFuture;
+                    });
+                }, executionContext);
+
+                result = (ObjectNode) updateFuture.get();
+                return ok(result);
+
+            } catch (Exception e) {
+                result.put("status", "error");
+                result.put("message", "Σφάλμα κατά την ενημέρωση");
+                return ok(result);
+            }
+        }
+    }
 
     public Result forgotPasswordSendEmail(final Http.Request request) throws IOException {
         JsonNode json = request.body().asJson();
@@ -331,23 +409,96 @@ public class UsersController  extends Controller {
     }
 
     // Get user by ID
-    public CompletionStage<Result> getUser(Http.Request request) {
-        return CompletableFuture.supplyAsync(() -> {
-            JsonNode json = request.body().asJson();
-            if (json == null || !json.has("id")) {
-                return badRequest("Missing user ID in JSON");
-            }
+    public Result getUser(final Http.Request request) throws IOException, ExecutionException, InterruptedException{
 
-            Long userId = json.get("id").asLong();
-            return jpaApi.withTransaction(em -> {
-                User user = em.find(User.class, userId);
-                if (user == null) {
-                    return notFound("User not found");
-                }
-                JsonNode userJson = objectMapper.valueToTree(user);
-                return ok(userJson);
-            });
-        });
+        JsonNode json = request.body().asJson();
+
+        if(json == null){
+            return badRequest("Invalid Json Format");
+        }
+        else {
+            ObjectNode result = Json.newObject();
+            HashMap<String, Object> returnList = new HashMap<>();
+            String jsonResult = "";
+
+
+            CompletableFuture<HashMap<String, Object>> getFuture = CompletableFuture.supplyAsync(() -> {
+
+                return jpaApi.withTransaction(entityManager -> {
+
+                    String name = json.findPath("name").asText();
+                    String email = json.findPath("email").asText();
+                    String role = json.findPath("role").asText();
+                    String phone = json.findPath("phone").asText();
+                    String photo = json.findPath("photo").asText();
+                    boolean hasEntered = json.findPath("hasEntered").asBoolean();
+                    String numOfTickets = json.findPath("numOfTickets").asText();
+
+                    String sql = "select * from users u where 1=1";
+
+                    if (name != null && !name.equalsIgnoreCase("") && !name.equalsIgnoreCase("null")) {
+                        sql += " and name = " + "'" + name + "'";
+                    }
+                    if (email != null && !email.equalsIgnoreCase("") && !email.equalsIgnoreCase("null")) {
+                        sql += " and email = " + "'" + email + "'";
+                    }
+                    if (role != null && !role.equalsIgnoreCase("") && !role.equalsIgnoreCase("null")) {
+                        sql += " and role = " + "'" + role + "'";
+                    }
+                    if (phone != null && !phone.equalsIgnoreCase("") && !phone.equalsIgnoreCase("null")) {
+                        sql += " and phone = " + "'" + phone + "'";
+                    }
+                    if (photo != null && !photo.equalsIgnoreCase("") && !photo.equalsIgnoreCase("null")) {
+                        sql += " and photo = " + "'" + photo + "'";
+                    }
+                    if (json.has("hasEntered")) {
+                        sql += " and hasEntered = " + hasEntered;
+                    }
+                    if (numOfTickets != null && !numOfTickets.equalsIgnoreCase("") && !numOfTickets.equalsIgnoreCase("null")) {
+                        sql += " and numOfTickets = " + numOfTickets;
+                    }
+
+                    HashMap<String, Object> returnListFuture = new HashMap<>();
+                    List<HashMap<String, Object>> finalList = new ArrayList<>();
+                    List<User> list = (List<User>) entityManager.createNativeQuery(sql, User.class).getResultList();
+
+                    for (User user : list) {
+                        HashMap<String, Object> officeMap = new HashMap<>();
+                        officeMap.put("id", user.getId());
+                        officeMap.put("name", user.getName());
+                        officeMap.put("email", user.getEmail());
+                        officeMap.put("role", user.getRole());
+                        officeMap.put("phone", user.getPhone());
+                        officeMap.put("photo", user.getPhoto());
+                        officeMap.put("hasEntered", user.isHasEntered());
+                        officeMap.put("numOfTickets", user.getNumOfTickets());
+
+                        finalList.add(officeMap);
+                    }
+                    returnListFuture.put("data", finalList);
+                    returnListFuture.put("total", list.size());
+                    returnListFuture.put("status", "success");
+                    returnListFuture.put("message", "ok");
+                    return returnListFuture;
+
+                });
+
+            }, executionContext);
+
+            returnList = getFuture.get();
+            DateFormat myDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            objectMapper.setDateFormat(myDateFormat);
+
+            try {
+                jsonResult = objectMapper.writeValueAsString(returnList);
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Πρόβλημα κατά την ανάγνωση των στοιχείων");
+                return ok(result);
+            }
+            return ok(jsonResult);
+        }
     }
 
     //Για την αλλαγή κωδικού

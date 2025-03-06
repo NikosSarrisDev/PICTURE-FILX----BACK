@@ -22,6 +22,16 @@ public class User {
 
     private boolean verified = false;
 
+    private String phone;
+
+    @Lob
+    @Column(name = "photo", columnDefinition = "LONGTEXT")
+    private String photo;
+
+    private boolean HasEntered;
+
+    private int numOfTickets;
+
     public Long getId() {
         return id;
     }
@@ -70,16 +80,48 @@ public class User {
         this.verified = verified;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public boolean isHasEntered() {
+        return HasEntered;
+    }
+
+    public void setHasEntered(boolean hasEntered) {
+        HasEntered = hasEntered;
+    }
+
+    public int getNumOfTickets() {
+        return numOfTickets;
+    }
+
+    public void setNumOfTickets(int numOfTickets) {
+        this.numOfTickets = numOfTickets;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof User user)) return false;
-        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(email, user.email) && Objects.equals(password, user.password);
+        return verified == user.verified && HasEntered == user.HasEntered && numOfTickets == user.numOfTickets && Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(role, user.role) && Objects.equals(phone, user.phone) && Objects.equals(photo, user.photo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, email, password);
+        return Objects.hash(id, name, email, password, role, verified, phone, photo, HasEntered, numOfTickets);
     }
 
     @Override
@@ -89,7 +131,12 @@ public class User {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
                 ", verified=" + verified +
+                ", phone='" + phone + '\'' +
+                ", photo='" + photo + '\'' +
+                ", HasEntered=" + HasEntered +
+                ", numOfTickets=" + numOfTickets +
                 '}';
     }
 }
