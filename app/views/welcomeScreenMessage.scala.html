@@ -1,3 +1,5 @@
+@(name: String)
+
 <!DOCTYPE html>
 <html lang="el">
     <head>
@@ -7,25 +9,32 @@
         body {
             display: flex;
             justify-content: center;
-            align-items: center;
             height: 100vh;
             background-color: #f3f4f6;
             margin: 0;
         }
         .welcome-box {
             background: white;
-            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 50%;
+            height: 50%;
+            margin: 2rem auto;
+            padding: 3rem;
             border-radius: 8px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            font-size: 24px;
+            font-size: 2rem;
             font-weight: bold;
-            color: #333;
+            color: #10d328;
         }
     </style>
     </head>
     <body>
         <div class="welcome-box">
-        Καλώς ορίσατε στην Αίθουσα
+            Καλώς ορίσατε στην Αίθουσα
+            <div style="font-weight: bold; padding: 2rem; color: #777777; text-decoration: #777777">@name</div>
         </div>
     </body>
 </html>

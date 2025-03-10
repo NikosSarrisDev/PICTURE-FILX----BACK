@@ -90,6 +90,8 @@ public class UsersController  extends Controller {
                         user.setEmail(email);
                         if(role.equals("USER") || role.equals("ADMIN")){
                             user.setRole(role);
+                        } else if (!json.has("role")){
+                            user.setRole("USER");
                         } else {
                             resultOfFuture.put("status", "error");
                             resultOfFuture.put("message", "Ο σιγκεκριμένος ρόλος δεν υποστηρίζεται από το σύστημα");

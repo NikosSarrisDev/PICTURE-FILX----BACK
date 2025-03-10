@@ -15,6 +15,7 @@ import controllers.execition_context.DatabaseExecutionContext;
 import controllers.mailer.EmailService;
 import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
+import models.User.User;
 import models.room.Room;
 import models.seat.Seat;
 import play.db.jpa.JPAApi;
@@ -302,11 +303,6 @@ public class SeatController extends Controller {
             String data = "http://localhost:9000/welcomeScanMessage";
             String path= "/Users/nikolaossarris/Downloads/ticket_play_framework/public/images/qrCode.jpg";
 
-            BitMatrix matrix = new MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, 500, 500);
-
-            //Store the qr code icon in the static files of play
-            MatrixToImageWriter.writeToPath(matrix, "jpg", Paths.get(path));
-
             try{
 
                 String userEmail = json.findPath("userEmail").asText();
@@ -316,6 +312,12 @@ public class SeatController extends Controller {
                 String date = json.findPath("date").asText();
                 String time = json.findPath("time").asText();
                 double amount = json.findPath("amount").asDouble();
+
+                data += "?userEmail=" + userEmail.replace("@", "%40");
+                BitMatrix matrix = new MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, 500, 500);
+
+                //Store the qr code icon in the static files of play
+                MatrixToImageWriter.writeToPath(matrix, "jpg", Paths.get(path));
 
                 String[] seatsArray = {};
                 if (seatsNode.isArray()) {
@@ -347,7 +349,39 @@ public class SeatController extends Controller {
 
     //This Action is used for display the welcome message when after the scan of the qr code
     public Result welcomeScanMessage(final Http.Request request) throws IOException {
-        return ok(views.html.welcomeScreenMessage.render());
+        ObjectNode result = Json.newObject();
+        try {
+
+            CompletableFuture<JsonNode> welcomeFuture = CompletableFuture.supplyAsync(() -> {
+                return jpaApi.withTransaction(entityManager -> {
+                    ObjectNode resultOfFuture = Json.newObject();
+
+                    String email = request.getQueryString("userEmail").replace("%40", "@");
+                    System.out.println(email);
+
+                    String sql = "update users set hasEntered = true where email = " + "'" + email + "'";
+
+                    Query query = entityManager.createNativeQuery(sql, User.class);
+                    int rowUpdated = query.executeUpdate();
+
+                    User user = (User) entityManager.createNativeQuery("select * from users where email = " + "'" + email + "'", User.class).getSingleResult();
+
+                    resultOfFuture.put("status", "success");
+                    resultOfFuture.put("row_updated", rowUpdated);
+                    resultOfFuture.put("Username", user.getName());
+                    resultOfFuture.put("system", "USERS_ACTIONS");
+                    return resultOfFuture;
+                });
+            },executionContext);
+
+            result = (ObjectNode) welcomeFuture.get();
+            return ok(views.html.welcomeScreenMessage.render(result.get("Username").asText()));
+
+        }catch (Exception e) {
+            result.put("status", "error");
+            result.put("message", "Σφάλμα κατά την ενημέρωση");
+            return ok(result);
+        }
     }
 
     public Result getSeat(final Http.Request request) throws IOException, ExecutionException, InterruptedException{
