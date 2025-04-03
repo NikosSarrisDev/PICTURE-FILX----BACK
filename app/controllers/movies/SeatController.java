@@ -114,6 +114,46 @@ public class SeatController extends Controller {
         }
     }
 
+    public Result addAllSeats(final Http.Request request) throws IOException {
+        JsonNode json = request.body().asJson();
+        if(json == null) {
+            return badRequest("Invalid Json Format");
+        } else {
+
+            ObjectNode result = Json.newObject();
+
+            try {
+
+                CompletableFuture<JsonNode> addFuture = CompletableFuture.supplyAsync(() -> {
+                    return jpaApi.withTransaction(entityManager -> {
+
+                        ObjectNode resultOfFuture = Json.newObject();
+
+                        Long roomId = json.findPath("roomId").asLong();
+                        int total = json.findPath("total").asInt();
+
+                        Query query = entityManager.createNativeQuery("CALL InsertTickets(" + total + "," + roomId + ")");
+                        query.executeUpdate();
+
+                        resultOfFuture.put("status", "success");
+                        resultOfFuture.put("system", "SEATS_ACTIONS");
+                        resultOfFuture.put("message", "Επιτυχία στην προσθήκη των θέσεων στο δωμάτιο");
+                        return resultOfFuture;
+                    });
+                }, executionContext);
+
+                result = (ObjectNode) addFuture.get();
+                return ok(result);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.put("status", "error");
+                result.put("message", "Κάτι πήγε στραβά με τη προσθήκη των θέσεων!");
+                return ok(result);
+            }
+        }
+    }
+
     public Result updateSeat(final Http.Request request) throws IOException {
 
         JsonNode json = request.body().asJson();

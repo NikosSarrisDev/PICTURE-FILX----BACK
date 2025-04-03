@@ -347,6 +347,7 @@ public class UsersController  extends Controller {
                         resultOfFuture.put("name", user.getName());
                         resultOfFuture.put("email", user.getEmail());
                         resultOfFuture.put("isVerified", user.isVerified());
+                        resultOfFuture.put("role", user.getRole());
                         resultOfFuture.put("system", "USERS_ACTIONS");
                         resultOfFuture.put("message", "Η σύνδεση πραγματοποιήθηκε!");
                         return resultOfFuture;

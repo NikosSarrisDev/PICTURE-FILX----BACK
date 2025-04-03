@@ -22,11 +22,11 @@ public class EmailService {
     //Method for verify emails
     public void sendVerificationEmail(String recipientEmail, String verificationLink) {
         Email email = new Email()
-                .setSubject("Verify Your Email")
+                .setSubject("Επαλλήθευση του email")
                 .setFrom("PICTURE FLIX <nikolaossarrisnode@gmail.com>")
                 .addTo(recipientEmail)
-                .setBodyText("Click the link below to verify your email: " + verificationLink)
-                .setBodyHtml("<p>Click the link below to verify your email:</p><a href='" + verificationLink + "'>Verify Email</a>");
+                .setBodyText("Πάτα το link που βλέπεις παρακάτω για να επαλληθεύσεις το email σου: " + verificationLink)
+                .setBodyHtml("<p>Το link επαλλήθευσης:</p><a href='" + verificationLink + "'>Επαλλήθευση Email</a>");
 
         mailerClient.send(email);
     }
@@ -34,20 +34,20 @@ public class EmailService {
     //Method for sending the password to the email(forgot Password feature)
     public void sendPasswordToEmail(String recipientEmail, String password) {
         Email email = new Email()
-                .setSubject("Password Sent!")
+                .setSubject("Ο Κωδικός Πρόσβασης στάλθηκε!")
                 .setFrom("PICTURE FLIX <nikolaossarrisnode@gmail.com>")
                 .addTo(recipientEmail)
-                .setBodyText("Your password for PICTURE FLIX is : " + password);
+                .setBodyText("Ο κωδικός πρόσβασής σου για το PICTURE FLIX είναι : " + password);
 
         mailerClient.send(email);
     }
 
     public void sendContactFormToAdminFromEmail(String recipientEmail, String text) {
         Email email = new Email()
-                .setSubject("You have a message from a user!")
+                .setSubject("Έχεις ένα μύνημα από έναν χρήστη!")
                 .setFrom(recipientEmail)
                 .addTo("nikolaossarrisnode@gmail.com")
-                .setBodyText("The user with email " + recipientEmail + " send you this text: " + text);
+                .setBodyText("Ο χρήστης με το email " + recipientEmail + " σου έστειλε αυτό το κείμενο: " + text);
 
         mailerClient.send(email);
     }
