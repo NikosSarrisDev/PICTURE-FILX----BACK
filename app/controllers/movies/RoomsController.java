@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execition_context.DatabaseExecutionContext;
+import jakarta.persistence.Query;
 import models.room.Room;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
@@ -58,6 +59,12 @@ public class RoomsController extends Controller {
                         String image3 = json.findPath("image3").asText();
                         String image4 = json.findPath("image4").asText();
                         String image5 = json.findPath("image5").asText();
+
+                        if ((long)entityManager.createNativeQuery("select count(*) from rooms where title = " + "'" + title + "'", Long.class).getSingleResult() > 0){
+                            resultOfFuture.put("status", "error");
+                            resultOfFuture.put("message", "Το όνομα για αυτό το δωμάτιο υπάρχει ήδη!");
+                            return resultOfFuture;
+                        }
 
                         Room room = new Room();
 
@@ -201,7 +208,9 @@ public class RoomsController extends Controller {
                         Long id = json.findPath("id").asLong();
 
                         Room room = entityManager.find(Room.class, id);
+                        Query query = entityManager.createNativeQuery("delete from seats where room_id = " + id);
 
+                        query.executeUpdate();
                         entityManager.remove(room);
 
                         resultOfFuture.put("status", "success");
