@@ -208,9 +208,11 @@ public class RoomsController extends Controller {
                         Long id = json.findPath("id").asLong();
 
                         Room room = entityManager.find(Room.class, id);
-                        Query query = entityManager.createNativeQuery("delete from seats where room_id = " + id);
+                        Query queryForSeats = entityManager.createNativeQuery("delete from seats where room_id = " + id);
+                        Query queryForViews = entityManager.createNativeQuery("delete from views where room_id = " + id);
 
-                        query.executeUpdate();
+                        queryForViews.executeUpdate();
+                        queryForSeats.executeUpdate();
                         entityManager.remove(room);
 
                         resultOfFuture.put("status", "success");

@@ -341,7 +341,7 @@ public class SeatController extends Controller {
 
             //QR Code initialization
             String data = "http://localhost:9000/welcomeScanMessage";
-            String path= "/Users/nikolaossarris/Downloads/ticket_play_framework/public/images/qrCode.jpg";
+            String path= "/Users/nikolaossarris/PictureFlixBack/public/images/qrCode.jpg";
 
             try{
 

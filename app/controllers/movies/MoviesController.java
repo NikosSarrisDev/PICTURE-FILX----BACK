@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.execition_context.DatabaseExecutionContext;
+import jakarta.persistence.Query;
 import models.Movies.Movie;
 import models.actors.Actor;
 import play.db.jpa.JPAApi;
@@ -261,7 +262,9 @@ public class MoviesController extends Controller {
                         ObjectNode resultOfFuture = Json.newObject();
 
                         Long id = json.findPath("id").asLong();
+                        Query query = entityManager.createNativeQuery("delete from views where movie_id = " + id);
 
+                        query.executeUpdate();
                         Movie movie = entityManager.find(Movie.class, id);
 
                         entityManager.remove(movie);
